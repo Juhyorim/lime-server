@@ -36,3 +36,11 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+task copyPrivate(type: Copy) {
+    copy {
+        from './lime-server-config'
+        include "*.yml"
+        into 'src/main/resources'
+    }
+}

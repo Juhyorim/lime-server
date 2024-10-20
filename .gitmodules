@@ -1,0 +1,3 @@
+[submodule "lime-server-config"]
+	path = lime-server-config
+	url = https://github.com/Juhyorim/lime-server-config.git
