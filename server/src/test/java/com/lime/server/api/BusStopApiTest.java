@@ -28,11 +28,12 @@ public class BusStopApiTest {
 
     @Test
     void cityCodeApi() throws IOException {
-        // 기존 코드에 추가할 매핑 로직
-        StringBuilder urlBuilder = new StringBuilder(CITY_CODE_API_URL); /*URL*/
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + serviceKey); /*Service Key*/
+        //City Code: 37050, City Name: 구미시
+
+        StringBuilder urlBuilder = new StringBuilder(CITY_CODE_API_URL);
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + serviceKey);
         urlBuilder.append(
-                "&" + URLEncoder.encode("_type", "UTF-8") + "=" + URLEncoder.encode("json", "UTF-8")); /*페이지번호*/
+                "&" + URLEncoder.encode("_type", "UTF-8") + "=" + URLEncoder.encode("json", "UTF-8"));
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
@@ -55,11 +56,9 @@ public class BusStopApiTest {
         rd.close();
         conn.disconnect();
 
-        // JSON을 객체로 매핑
         ObjectMapper objectMapper = new ObjectMapper();
         CityCodeApiResponse cityCodeApiResponse = objectMapper.readValue(sb.toString(), CityCodeApiResponse.class);
 
-        // 매핑된 객체 사용 예시
         if ("00".equals(cityCodeApiResponse.getResponse().getHeader().getResultCode())) {
             List<CityCodeDto> cities = cityCodeApiResponse.getResponse().getBody().getItems().getItem();
             for (CityCodeDto city : cities) {
