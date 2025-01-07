@@ -1,4 +1,4 @@
-package com.lime.server.bus.dto;
+package com.lime.server.bus.dto.cityApi;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CityApiResponse {
+public class BusStopApiResponse {
     private Response response;
 
     @Getter
@@ -32,20 +32,26 @@ public class CityApiResponse {
     @AllArgsConstructor
     public static class Body {
         private Items items;
+        private int numOfRows;
+        private int pageNo;
+        private int totalCount;
     }
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Items {
-        private List<City> item;
+        private List<BusStop> item;
     }
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class City {
-        private int citycode;
-        private String cityname;
+    public static class BusStop {
+        private double gpslati;
+        private double gpslong;
+        private String nodeid;
+        private String nodenm;
+        private Integer nodeno; //선택적
     }
 }
