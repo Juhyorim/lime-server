@@ -1,4 +1,4 @@
-package com.lime.server.busApi.dto.response;
+package com.lime.server.tico.dto.response;
 
 import com.lime.server.busApi.dto.apiResponse.CityApiResponse;
 import java.util.ArrayList;

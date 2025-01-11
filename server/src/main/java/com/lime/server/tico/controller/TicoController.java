@@ -1,6 +1,6 @@
-package com.lime.server.controller;
+package com.lime.server.tico.controller;
 
-import com.lime.server.busApi.dto.response.CityResponse;
+import com.lime.server.tico.dto.response.CityResponse;
 import com.lime.server.busApi.service.BusApiService;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;

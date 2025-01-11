@@ -3,7 +3,7 @@ package com.lime.server.busApi.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lime.server.busApi.dto.apiResponse.CityApiResponse;
 import com.lime.server.busApi.dto.apiResponse.CityApiResponse.City;
-import com.lime.server.busApi.dto.response.CityResponse;
+import com.lime.server.tico.dto.response.CityResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
