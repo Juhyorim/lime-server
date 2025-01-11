@@ -1,4 +1,4 @@
-package com.lime.server.bus.dto.cityApi;
+package com.lime.server.bus.dto.apiResponse;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
