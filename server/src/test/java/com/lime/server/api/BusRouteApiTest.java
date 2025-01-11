@@ -2,8 +2,8 @@ package com.lime.server.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lime.server.BusApiTest;
-import com.lime.server.bus.dto.apiResponse.BusRouteApiResponse;
-import com.lime.server.bus.dto.apiResponse.BusRouteApiResponse.BusStation;
+import com.lime.server.busApi.dto.apiResponse.BusRouteApiResponse;
+import com.lime.server.busApi.dto.apiResponse.BusRouteApiResponse.BusStation;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

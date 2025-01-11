@@ -1,4 +1,4 @@
-package com.lime.server.bus.dto.apiResponse;
+package com.lime.server.busApi.dto.apiResponse;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BusRouteApiResponse {
+public class BusStopApiResponse {
     private Response response;
 
     @Getter
@@ -41,20 +41,17 @@ public class BusRouteApiResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Items {
-        private List<BusStation> item;
+        private List<BusStop> item;
     }
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class BusStation {
-        private String routeid;
-        private String nodeid;
-        private String nodenm;
-        private String nodeno; //선택적, 정류소 번호
-        private int nodeord;
+    public static class BusStop {
         private double gpslati;
         private double gpslong;
-        private int updowncd; //선택적
+        private String nodeid;
+        private String nodenm;
+        private Integer nodeno; //선택적
     }
 }

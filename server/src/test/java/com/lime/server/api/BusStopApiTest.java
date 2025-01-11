@@ -2,12 +2,12 @@ package com.lime.server.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lime.server.BusApiTest;
-import com.lime.server.bus.dto.apiResponse.BusStopApiResponse;
-import com.lime.server.bus.dto.apiResponse.BusStopApiResponse.BusStop;
-import com.lime.server.bus.dto.apiResponse.BusStopRouteApiResponse;
-import com.lime.server.bus.dto.apiResponse.BusStopRouteApiResponse.BusRoute;
-import com.lime.server.bus.dto.apiResponse.CityApiResponse;
-import com.lime.server.bus.dto.apiResponse.CityApiResponse.City;
+import com.lime.server.busApi.dto.apiResponse.BusStopApiResponse;
+import com.lime.server.busApi.dto.apiResponse.BusStopApiResponse.BusStop;
+import com.lime.server.busApi.dto.apiResponse.BusStopRouteApiResponse;
+import com.lime.server.busApi.dto.apiResponse.BusStopRouteApiResponse.BusRoute;
+import com.lime.server.busApi.dto.apiResponse.CityApiResponse;
+import com.lime.server.busApi.dto.apiResponse.CityApiResponse.City;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
