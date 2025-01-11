@@ -1,5 +1,6 @@
 package com.lime.server.tico.controller;
 
+import com.lime.server.tico.dto.response.BusRouteResponse;
 import com.lime.server.tico.dto.response.BusStationResponse;
 import com.lime.server.tico.dto.response.CityResponse;
 import com.lime.server.busApi.service.BusApiService;
@@ -25,10 +26,20 @@ public class TicoController {
     }
 
     @GetMapping("/bus-station/{cityCode}/{pageNum}")
-    public ResponseEntity<BusStationResponse> getBusStations(@PathVariable(name = "cityCode") String cityCode, @PathVariable(name="pageNum") int pageNum)
+    public ResponseEntity<BusStationResponse> getBusStations(@PathVariable(name = "cityCode") String cityCode,
+                                                             @PathVariable(name = "pageNum") int pageNum)
             throws IOException {
         BusStationResponse busStations = busApiService.getBusStations(cityCode, pageNum);
 
         return ResponseEntity.ok(busStations);
+    }
+
+    @GetMapping("/bus-route/{cityCode}/{nodeId}")
+    public ResponseEntity<BusRouteResponse> getRoutes(@PathVariable(name = "cityCode") String cityCode,
+                                                      @PathVariable(name = "nodeId") String nodeId)
+            throws IOException {
+        BusRouteResponse busRouteInfo = busApiService.getBusRouteInfo(cityCode, nodeId);
+
+        return ResponseEntity.ok(busRouteInfo);
     }
 }
