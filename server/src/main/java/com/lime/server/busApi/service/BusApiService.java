@@ -1,8 +1,11 @@
 package com.lime.server.busApi.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lime.server.busApi.dto.apiResponse.BusStopApiResponse;
+import com.lime.server.busApi.dto.apiResponse.BusStopApiResponse.BusStop;
 import com.lime.server.busApi.dto.apiResponse.CityApiResponse;
 import com.lime.server.busApi.dto.apiResponse.CityApiResponse.City;
+import com.lime.server.tico.dto.response.BusStationResponse;
 import com.lime.server.tico.dto.response.CityResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class BusApiService {
     private static final String CITY_CODE_API_URL = "http://apis.data.go.kr/1613000/BusSttnInfoInqireService/getCtyCodeList";
+    private static final String BUS_STOP_API_URL_FORMAT = "http://apis.data.go.kr/1613000/BusSttnInfoInqireService/getSttnNoList?serviceKey=%s&cityCode=%s&_type=json&numOfRows=50&pageNo=%d";
 
     @Value("${api.serviceKey}")
     public String serviceKey;
@@ -63,5 +67,37 @@ public class BusApiService {
         }
 
         return CityResponse.from(cityCodeApiResponse);
+    }
+
+    public BusStationResponse getBusStations(String cityCode, int pageNum) throws IOException {
+        URL url = new URL(String.format(BUS_STOP_API_URL_FORMAT, serviceKey, cityCode, pageNum));
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+        int responseCode = conn.getResponseCode();
+        log.info("Response code: " + responseCode);
+
+        BufferedReader rd;
+        if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        BusStopApiResponse cityCodeApiResponse = objectMapper.readValue(sb.toString(), BusStopApiResponse.class);
+
+//        if ("00".equals(cityCodeApiResponse.getResponse().getHeader().getResultCode())) {
+//        }
+
+        return BusStationResponse.from(cityCodeApiResponse);
     }
 }
