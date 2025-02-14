@@ -18,6 +18,6 @@ public class BusArriveApiTest {
 
     @Test
     void arriveApiTest() throws IOException {
-        busApiService.getArriveBuses();
+        busApiService.getArriveBuses("37050", "GMB4");
     }
 }

@@ -15,12 +15,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
@@ -151,17 +154,23 @@ public class BusApiService {
         return BusRouteResponse.from(busStopRouteApiResponse);
     }
 
-    public void getArriveBuses() throws IOException {
-        StringBuilder urlBuilder = new StringBuilder(ARRIVE_BUS_API_URL);
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + serviceKey);
-        urlBuilder.append(
-                "&" + URLEncoder.encode("_type", "UTF-8") + "=" + URLEncoder.encode("json", "UTF-8"));
-        urlBuilder.append(
-                "&" + URLEncoder.encode("cityCode", "UTF-8") + "=" + URLEncoder.encode("37050", "UTF-8"));
-        urlBuilder.append(
-                "&" + URLEncoder.encode("nodeId", "UTF-8") + "=" + URLEncoder.encode("GMB708", "UTF-8"));
+    private URL getArriveBusesURL(String cityCode, String nodeId) throws IOException {
+        URI uri = UriComponentsBuilder.fromHttpUrl(ARRIVE_BUS_API_URL)
+                .queryParam("serviceKey", serviceKey)
+                .queryParam("_type", "json")
+                .queryParam("cityCode", cityCode)
+                .queryParam("nodeid", nodeId)
+                .encode(StandardCharsets.UTF_8)
+                .build()
+                .toUri();
 
-        URL url = new URL(urlBuilder.toString());
+        log.info(uri.toString());
+
+        return uri.toURL();
+    }
+
+    public void getArriveBuses(String cityCode, String nodeId) throws IOException {
+        URL url = getArriveBusesURL(cityCode, nodeId);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
@@ -211,3 +220,5 @@ public class BusApiService {
         }
     }
 }
+
+
