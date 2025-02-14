@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,4 +28,8 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     List<Subscription> subscriptions;
+
+    public static Member of(String username, String password, String nickname, String email) {
+        return new Member(null, username, password, nickname, email, new ArrayList<>());
+    }
 }
