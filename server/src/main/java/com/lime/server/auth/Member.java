@@ -1,11 +1,12 @@
-package com.lime.server.tico.entity;
+package com.lime.server.auth;
 
+import com.lime.server.subscribe.Subscription;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,19 +15,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Subscription {
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", referencedColumnName = "id")
-    private Member member;
+    private String username;
+    private String password;
+    private String nickname;
+    private String email;
 
-    private int cityCode;
-
-    private String nodeId;
-    private String nodeNo;
-    private String nodeName;
-    private String routeId;
+    @OneToMany(mappedBy = "member")
+    List<Subscription> subscriptions;
 }
