@@ -131,7 +131,7 @@ public class BusStopApiTest {
         urlBuilder.append(
                 "&" + URLEncoder.encode("_type", "UTF-8") + "=" + URLEncoder.encode("json", "UTF-8"));
         urlBuilder.append(
-                "&" + URLEncoder.encode("nodeId", "UTF-8") + "=" + URLEncoder.encode("GMB708", "UTF-8"));
+                "&" + URLEncoder.encode("nodeid", "UTF-8") + "=" + URLEncoder.encode("GMB4", "UTF-8"));
 
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();

@@ -113,7 +113,7 @@ public class BusApiService {
         urlBuilder.append(
                 "&" + URLEncoder.encode("_type", "UTF-8") + "=" + URLEncoder.encode("json", "UTF-8"));
         urlBuilder.append(
-                "&" + URLEncoder.encode("nodeId", "UTF-8") + "=" + URLEncoder.encode(nodeId, "UTF-8"));
+                "&" + URLEncoder.encode("nodeid", "UTF-8") + "=" + URLEncoder.encode(nodeId, "UTF-8"));
 
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
