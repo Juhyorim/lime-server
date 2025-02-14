@@ -18,7 +18,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Service
 public class BusApiService {
     private static final String CITY_CODE_API_URL = "http://apis.data.go.kr/1613000/BusSttnInfoInqireService/getCtyCodeList";
-    private static final String BUS_STOP_API_URL_FORMAT = "http://apis.data.go.kr/1613000/BusSttnInfoInqireService/getSttnNoList?serviceKey=%s&cityCode=%s&_type=json&numOfRows=50&pageNo=%d";
+    private static final String BUS_STOP_API_URL = "http://apis.data.go.kr/1613000/BusSttnInfoInqireService/getSttnNoList";
     private static final String BUS_STOP_ROUTE_API_URL = "http://apis.data.go.kr/1613000/BusSttnInfoInqireService/getSttnThrghRouteList";
     private static final String ARRIVE_BUS_API_URL = "http://apis.data.go.kr/1613000/ArvlInfoInqireService/getSttnAcctoArvlPrearngeInfoList";
 
@@ -38,12 +37,8 @@ public class BusApiService {
     public String serviceKey;
 
     public CityResponse getCities() throws IOException {
-        StringBuilder urlBuilder = new StringBuilder(CITY_CODE_API_URL);
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + serviceKey);
-        urlBuilder.append(
-                "&" + URLEncoder.encode("_type", "UTF-8") + "=" + URLEncoder.encode("json", "UTF-8"));
+        URL url = getCitiesUrl();
 
-        URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Content-type", "application/json");
@@ -193,8 +188,29 @@ public class BusApiService {
         }
     }
 
+    private URL getCitiesUrl() throws MalformedURLException {
+        URI uri = UriComponentsBuilder.fromHttpUrl(CITY_CODE_API_URL)
+                .queryParam("serviceKey", serviceKey)
+                .queryParam("_type", "json")
+                .encode(StandardCharsets.UTF_8)
+                .build()
+                .toUri();
+
+        return uri.toURL();
+    }
+
     private URL getBusStationUrl(String cityCode, int pageNum) throws MalformedURLException {
-        return new URL(String.format(BUS_STOP_API_URL_FORMAT, serviceKey, cityCode, pageNum));
+        URI uri = UriComponentsBuilder.fromHttpUrl(BUS_STOP_API_URL)
+                .queryParam("serviceKey", serviceKey)
+                .queryParam("_type", "json")
+                .queryParam("numOfRows", "50")
+                .queryParam("pageNo", pageNum)
+                .queryParam("cityCode", cityCode)
+                .encode(StandardCharsets.UTF_8)
+                .build()
+                .toUri();
+
+        return uri.toURL();
     }
 
     private URL getBusRouteURL(String cityCode, String nodeId) throws IOException {
