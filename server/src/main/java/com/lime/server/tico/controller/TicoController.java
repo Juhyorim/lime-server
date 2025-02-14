@@ -4,6 +4,7 @@ import com.lime.server.tico.dto.response.BusRouteResponse;
 import com.lime.server.tico.dto.response.BusStationResponse;
 import com.lime.server.tico.dto.response.CityResponse;
 import com.lime.server.busApi.service.BusApiService;
+import io.swagger.v3.oas.annotations.Operation;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class TicoController {
     private final BusApiService busApiService;
 
+    //memo: 구미시 citycode = 37050
+    //거상빌딩 nodeId = GMB4, nodeNo = 10004
+
+    @Operation(summary = "도시 목록 조회")
     @GetMapping("/city")
     public ResponseEntity<CityResponse> getCities() throws IOException {
         CityResponse cityResponse = busApiService.getCities();
@@ -25,6 +30,7 @@ public class TicoController {
         return ResponseEntity.ok(cityResponse);
     }
 
+    @Operation(summary = "citycode 기반, 버스 정류소 조회")
     @GetMapping("/bus-station/{cityCode}/{pageNum}")
     public ResponseEntity<BusStationResponse> getBusStations(@PathVariable(name = "cityCode") String cityCode,
                                                              @PathVariable(name = "pageNum") int pageNum)
