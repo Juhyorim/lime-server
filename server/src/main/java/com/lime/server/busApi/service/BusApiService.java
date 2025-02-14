@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -79,7 +80,7 @@ public class BusApiService {
     }
 
     public BusStationResponse getBusStations(String cityCode, int pageNum) throws IOException {
-        URL url = new URL(String.format(BUS_STOP_API_URL_FORMAT, serviceKey, cityCode, pageNum));
+        URL url = getBusStationUrl(cityCode, pageNum);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Content-type", "application/json");
@@ -111,18 +112,7 @@ public class BusApiService {
     }
 
     public BusRouteResponse getBusRouteInfo(String cityCode, String nodeId) throws IOException {
-        StringBuilder urlBuilder = new StringBuilder(BUS_STOP_ROUTE_API_URL);
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + serviceKey);
-        urlBuilder.append(
-                "&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode("100", "UTF-8"));
-        urlBuilder.append(
-                "&" + URLEncoder.encode("cityCode", "UTF-8") + "=" + URLEncoder.encode(cityCode, "UTF-8"));
-        urlBuilder.append(
-                "&" + URLEncoder.encode("_type", "UTF-8") + "=" + URLEncoder.encode("json", "UTF-8"));
-        urlBuilder.append(
-                "&" + URLEncoder.encode("nodeid", "UTF-8") + "=" + URLEncoder.encode(nodeId, "UTF-8"));
-
-        URL url = new URL(urlBuilder.toString());
+        URL url = getBusRouteURL(cityCode, nodeId);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Content-type", "application/json");
@@ -148,25 +138,7 @@ public class BusApiService {
         BusStopRouteApiResponse busStopRouteApiResponse = objectMapper.readValue(sb.toString(),
                 BusStopRouteApiResponse.class);
 
-//        if ("00".equals(busStopRouteApiResponse.getResponse().getHeader().getResultCode())) {
-//        }
-
         return BusRouteResponse.from(busStopRouteApiResponse);
-    }
-
-    private URL getArriveBusesURL(String cityCode, String nodeId) throws IOException {
-        URI uri = UriComponentsBuilder.fromHttpUrl(ARRIVE_BUS_API_URL)
-                .queryParam("serviceKey", serviceKey)
-                .queryParam("_type", "json")
-                .queryParam("cityCode", cityCode)
-                .queryParam("nodeid", nodeId)
-                .encode(StandardCharsets.UTF_8)
-                .build()
-                .toUri();
-
-        log.info(uri.toString());
-
-        return uri.toURL();
     }
 
     public void getArriveBuses(String cityCode, String nodeId) throws IOException {
@@ -194,7 +166,8 @@ public class BusApiService {
         conn.disconnect();
 
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true); //빈 문자열이 올 때(도착 예정 버스가 없을 때) 처리
+        objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,
+                true); //빈 문자열이 올 때(도착 예정 버스가 없을 때) 처리
         BusArriveApiResponse cityCodeApiResponse = objectMapper.readValue(sb.toString(), BusArriveApiResponse.class);
 
         if ("00".equals(cityCodeApiResponse.getResponse().getHeader().getResultCode())) {
@@ -218,6 +191,41 @@ public class BusApiService {
                 );
             }
         }
+    }
+
+    private URL getBusStationUrl(String cityCode, int pageNum) throws MalformedURLException {
+        return new URL(String.format(BUS_STOP_API_URL_FORMAT, serviceKey, cityCode, pageNum));
+    }
+
+    private URL getBusRouteURL(String cityCode, String nodeId) throws IOException {
+        URI uri = UriComponentsBuilder.fromHttpUrl(BUS_STOP_ROUTE_API_URL)
+                .queryParam("serviceKey", serviceKey)
+                .queryParam("numOfRows", "100") //TODO 개선
+                .queryParam("_type", "json")
+                .queryParam("cityCode", cityCode)
+                .queryParam("nodeid", nodeId)
+                .encode(StandardCharsets.UTF_8)
+                .build()
+                .toUri();
+
+        log.info(uri.toString());
+
+        return uri.toURL();
+    }
+
+    private URL getArriveBusesURL(String cityCode, String nodeId) throws IOException {
+        URI uri = UriComponentsBuilder.fromHttpUrl(ARRIVE_BUS_API_URL)
+                .queryParam("serviceKey", serviceKey)
+                .queryParam("_type", "json")
+                .queryParam("cityCode", cityCode)
+                .queryParam("nodeid", nodeId)
+                .encode(StandardCharsets.UTF_8)
+                .build()
+                .toUri();
+
+        log.info(uri.toString());
+
+        return uri.toURL();
     }
 }
 
