@@ -1,5 +1,6 @@
 package com.lime.server.api;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lime.server.BusApiTest;
 import com.lime.server.busApi.dto.apiResponse.BusArriveApiResponse;
@@ -58,12 +59,17 @@ public class BusArriveApiTest {
         rd.close();
         conn.disconnect();
 
-//        logger.info(() -> sb.toString());
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true); //빈 문자열이 올 때(도착 예정 버스가 없을 때) 처리
         BusArriveApiResponse cityCodeApiResponse = objectMapper.readValue(sb.toString(), BusArriveApiResponse.class);
 
         if ("00".equals(cityCodeApiResponse.getResponse().getHeader().getResultCode())) {
             BusArriveApiResponse.Items busArriveApiItems = cityCodeApiResponse.getResponse().getBody().getItems();
+
+            if (busArriveApiItems == null) {
+                return;
+            }
+
             List<ArriveBus> cities = busArriveApiItems.getItem();
             for (ArriveBus bus : cities) {
                 logger.info(() ->
