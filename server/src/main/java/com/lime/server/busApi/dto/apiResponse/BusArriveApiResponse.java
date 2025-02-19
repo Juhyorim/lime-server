@@ -48,13 +48,13 @@ public class BusArriveApiResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ArriveBus {
-        private int arrprevstationcnt;
-        private int arrtime;
-        private String nodeid;
-        private String nodenm;
-        private String routeid;
+        private int arrprevstationcnt; //도착예정버스 남은 정류장 수
+        private int arrtime; //도착예정시간[초]
+        private String nodeid; //정류소ID
+        private String nodenm; //정류소 이름
+        private String routeid; //노선 ID
         private String routeno; //선택적, 303-1
-        private String routetp;
-        private String vehicletp;
+        private String routetp; //노선 유형 (일반버스, 좌석버스)
+        private String vehicletp; //도착예정버스 차량 유형 (저상버스, 일반차량)
     }
 }

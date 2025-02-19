@@ -3,11 +3,9 @@ package com.lime.server.busApi.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lime.server.busApi.dto.apiResponse.BusArriveApiResponse;
-import com.lime.server.busApi.dto.apiResponse.BusArriveApiResponse.ArriveBus;
 import com.lime.server.busApi.dto.apiResponse.BusStopApiResponse;
 import com.lime.server.busApi.dto.apiResponse.BusStopRouteApiResponse;
 import com.lime.server.busApi.dto.apiResponse.CityApiResponse;
-import com.lime.server.busApi.dto.apiResponse.CityApiResponse.City;
 import com.lime.server.tico.dto.response.BusRouteResponse;
 import com.lime.server.tico.dto.response.BusStationResponse;
 import com.lime.server.tico.dto.response.CityResponse;
@@ -19,7 +17,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -63,13 +60,13 @@ public class BusApiService {
         ObjectMapper objectMapper = new ObjectMapper();
         CityApiResponse cityCodeApiResponse = objectMapper.readValue(sb.toString(), CityApiResponse.class);
 
-        if ("00".equals(cityCodeApiResponse.getResponse().getHeader().getResultCode())) {
-            CityApiResponse.Items cityApiItems = cityCodeApiResponse.getResponse().getBody().getItems();
-            List<City> cities = cityApiItems.getItem();
-            for (City city : cities) {
-                log.info("City Code: " + city.getCitycode() + ", City Name: " + city.getCityname());
-            }
-        }
+//        if ("00".equals(cityCodeApiResponse.getResponse().getHeader().getResultCode())) {
+//            CityApiResponse.Items cityApiItems = cityCodeApiResponse.getResponse().getBody().getItems();
+//            List<City> cities = cityApiItems.getItem();
+//            for (City city : cities) {
+//                log.info("City Code: " + city.getCitycode() + ", City Name: " + city.getCityname());
+//            }
+//        }
 
         return CityResponse.from(cityCodeApiResponse);
     }
@@ -136,7 +133,7 @@ public class BusApiService {
         return BusRouteResponse.from(busStopRouteApiResponse);
     }
 
-    public void getArriveBuses(String cityCode, String nodeId) throws IOException {
+    public BusArriveApiResponse getArriveBuses(String cityCode, String nodeId) throws IOException {
         URL url = getArriveBusesURL(cityCode, nodeId);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -160,32 +157,36 @@ public class BusApiService {
         rd.close();
         conn.disconnect();
 
+//        System.out.println(sb.toString());
+
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,
                 true); //빈 문자열이 올 때(도착 예정 버스가 없을 때) 처리
-        BusArriveApiResponse cityCodeApiResponse = objectMapper.readValue(sb.toString(), BusArriveApiResponse.class);
+        BusArriveApiResponse busArriveApiResponse = objectMapper.readValue(sb.toString(), BusArriveApiResponse.class);
 
-        if ("00".equals(cityCodeApiResponse.getResponse().getHeader().getResultCode())) {
-            BusArriveApiResponse.Items busArriveApiItems = cityCodeApiResponse.getResponse().getBody().getItems();
+//        if ("00".equals(busArriveApiResponse.getResponse().getHeader().getResultCode())) {
+//            BusArriveApiResponse.Items busArriveApiItems = busArriveApiResponse.getResponse().getBody().getItems();
+//
+//            if (busArriveApiItems == null) {
+//                return new BusArriveApiResponse();
+//            }
+//
+//            List<ArriveBus> cities = busArriveApiItems.getItem();
+//            for (ArriveBus bus : cities) {
+//                log.info(
+//                        "arrprevstationcnt: " + bus.getArrprevstationcnt()
+//                                + ", arrtime: " + bus.getArrtime()
+//                                + ", nodeid: " + bus.getNodeid()
+//                                + ", nodenm: " + bus.getNodenm()
+//                                + ", routeid: " + bus.getRouteid()
+//                                + ", routeno: " + bus.getRouteno() //버스번호
+//                                + ", routetp: " + bus.getRoutetp()
+//                                + ", vehicletp: " + bus.getVehicletp()
+//                );
+//            }
+//        }
 
-            if (busArriveApiItems == null) {
-                return;
-            }
-
-            List<ArriveBus> cities = busArriveApiItems.getItem();
-            for (ArriveBus bus : cities) {
-                log.info(
-                        "arrprevstationcnt: " + bus.getArrprevstationcnt()
-                                + ", arrtime: " + bus.getArrtime()
-                                + ", nodeid: " + bus.getNodeid()
-                                + ", nodenm: " + bus.getNodenm()
-                                + ", routeid: " + bus.getRouteid()
-                                + ", routeno: " + bus.getRouteno() //버스번호
-                                + ", routetp: " + bus.getRoutetp()
-                                + ", vehicletp: " + bus.getVehicletp()
-                );
-            }
-        }
+        return busArriveApiResponse;
     }
 
     private URL getCitiesUrl() throws MalformedURLException {
@@ -234,7 +235,7 @@ public class BusApiService {
                 .queryParam("serviceKey", serviceKey)
                 .queryParam("_type", "json")
                 .queryParam("cityCode", cityCode)
-                .queryParam("nodeid", nodeId)
+                .queryParam("nodeId", nodeId)
                 .encode(StandardCharsets.UTF_8)
                 .build()
                 .toUri();

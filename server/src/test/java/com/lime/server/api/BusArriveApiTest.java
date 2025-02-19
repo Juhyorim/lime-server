@@ -18,6 +18,8 @@ public class BusArriveApiTest {
 
     @Test
     void arriveApiTest() throws IOException {
-        busApiService.getArriveBuses("37050", "GMB4");
+        //예시 API
+        //{"response":{"header":{"resultCode":"00","resultMsg":"NORMAL SERVICE."},"body":{"items":{"item":[{"arrprevstationcnt":3,"arrtime":225,"nodeid":"GMB620","nodenm":"옥계대우아파트앞","routeid":"GMB19120","routeno":191,"routetp":"일반버스","vehicletp":"저상버스"},{"arrprevstationcnt":5,"arrtime":304,"nodeid":"GMB620","nodenm":"옥계대우아파트앞","routeid":"GMB90020","routeno":900,"routetp":"일반버스","vehicletp":"일반차량"},{"arrprevstationcnt":2,"arrtime":158,"nodeid":"GMB620","nodenm":"옥계대우아파트앞","routeid":"GMB96020","routeno":960,"routetp":"좌석버스","vehicletp":"일반차량"}]},"numOfRows":10,"pageNo":1,"totalCount":3}}}
+        busApiService.getArriveBuses("37050", "GMB620"); //GMB4
     }
 }
