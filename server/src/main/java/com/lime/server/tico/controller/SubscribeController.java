@@ -17,8 +17,8 @@ public class SubscribeController {
     @Operation(summary = "구독하기")
     @PostMapping("/subscribe")
     public ResponseEntity subscribe(@RequestBody SubscribeRequest request) {
-        subscribeService.subscribe(request.stationId(), request.routeId());
+        subscribeService.subscribe(request.stationId(), request.routeId(), request.nodeName(), request.nodeNo(), request.cityCode());
 
-        return null;
+        return ResponseEntity.ok().build();
     }
 }
