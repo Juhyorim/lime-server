@@ -4,6 +4,7 @@ import com.lime.server.auth.Member;
 import com.lime.server.auth.repository.MemberRepository;
 import com.lime.server.subscribe.Subscription;
 import com.lime.server.subscribe.repository.SubscribeRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,5 +33,15 @@ public class SubscribeServiceImpl implements SubscribeService {
 
         subscription = Subscription.of(findMember, cityCode, stationId, nodeNo, nodeName, routeId);
         subscribeRepository.save(subscription);
+    }
+
+    @Override
+    public List<Subscription> getList() {
+        Member findMember = memberRepository.findById(MEMBER_ID)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 없음"));
+
+        List<Subscription> subscriptions = subscribeRepository.findByMember(findMember);
+
+        return subscriptions;
     }
 }
