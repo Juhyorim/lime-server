@@ -42,8 +42,16 @@ tasks.named('test') {
 
 task copyYML(type: Copy){
     copy {
-        from './lime-server-private/'
-        include "*.yml"
+        from './lime-server-private/common/'
+        include "application.yml"
         into './src/main/resources'
+    }
+}
+
+task copyTestYML(type: Copy) {
+    copy {
+        from './lime-server-private/test/'
+        include "application.yml"
+        into './src/test/resources'
     }
 }
