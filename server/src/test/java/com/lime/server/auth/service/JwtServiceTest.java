@@ -6,6 +6,7 @@ import com.lime.server.auth.Member;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,10 +31,20 @@ class JwtServiceTest {
     }
 
     @Test
+    @Order(1)
     void createToken() {
         assertDoesNotThrow(() -> {
             String s = jwtService.generateAccessToken(member);
             log.info(s);
         });
+    }
+
+    @Test
+    @Order(2)
+    void getTokenInfo() {
+        String jwtToken = jwtService.generateAccessToken(member);
+        String username = jwtService.extractUsername(jwtToken);
+
+        assertEquals("이름", username);
     }
 }
