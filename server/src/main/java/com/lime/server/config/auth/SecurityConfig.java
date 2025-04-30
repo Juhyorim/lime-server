@@ -21,8 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
         securedEnabled = true,
         jsr250Enabled = true)
 public class SecurityConfig {
-    private static final String API_PREFIX = "/api/v1";
-
     private final JwtService jwtService;
     private final AuthenticationProvider authenticationProvider;
     private final UserDetailsService userDetailsService;
@@ -32,8 +30,8 @@ public class SecurityConfig {
     };
 
     private final String[] whiteList = {
-            API_PREFIX + "/login/**",
-            API_PREFIX + "/*/join"
+            "*login",
+            "*join"
     };
 
     //TODO WebSecurityCustomizer로 whiteList 적용 알아보기
