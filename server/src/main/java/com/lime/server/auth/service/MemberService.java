@@ -11,10 +11,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Service
 public class MemberService {
+    //임시 회원가입 코드
+    private static final String tempSignupKey = "cuteguru";
+
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Member createMember(String username, String password, String nickName, String email) {
+    public Member createMember(String username, String password, String nickName, String email, String signupKey) {
+        if (!signupKey.equals(tempSignupKey)) {
+            throw new IllegalArgumentException("signupKey not match");
+        }
+
         //패스워드 인코딩
         String encodedPassword = passwordEncoder.encode(password);
 
