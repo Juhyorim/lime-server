@@ -30,8 +30,9 @@ public class SecurityConfig {
     };
 
     private final String[] whiteList = {
-            "*login",
-            "*join"
+            "/api/v1/login",
+            "/api/v1/join",
+            "/api/v1/tico/test"
     };
 
     //TODO WebSecurityCustomizer로 whiteList 적용 알아보기

@@ -10,10 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/v1")
+@RequestMapping("${api_prefix}/tico")
 @RequiredArgsConstructor
 @RestController
 public class TicoController {
@@ -21,6 +22,12 @@ public class TicoController {
 
     //memo: 구미시 citycode = 37050
     //거상빌딩 nodeId = GMB4, nodeNo = 10004
+
+    @Operation(summary = "테스트")
+    @PostMapping("/test")
+    public ResponseEntity<String> corsTest() {
+        return ResponseEntity.ok("cors good!~~");
+    }
 
     @Operation(summary = "도시 목록 조회")
     @GetMapping("/city")
