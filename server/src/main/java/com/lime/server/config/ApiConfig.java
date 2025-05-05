@@ -25,8 +25,10 @@ public class ApiConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("https://tico-lime-project.vercel.app", "http://localhost:5173")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
                         .allowCredentials(true)
-                        .allowedMethods("GET", "POST", "PUT", "DELETE");
+                        .maxAge(3600);
             }
         };
     }
