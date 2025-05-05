@@ -59,21 +59,39 @@ public class BusApiService {
         }
     }
 
-    public BusStationResponse getBusStations(String cityCode, int pageNum) throws IOException {
-        URL busStationUrl = getBusStationUrl(cityCode, pageNum);
+    public BusStationResponse getBusStations(String cityCode, int pageNum, String nodeNm, String nodeNo)
+            throws IOException {
+        validateCityCode(cityCode);
+        validatePageNum(pageNum);
+
+        URL busStationUrl = getBusStationUrl(cityCode, pageNum, nodeNm, nodeNo);
         StringBuilder sb = getResponse(busStationUrl);
 
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            BusStopApiResponse cityCodeApiResponse = objectMapper.readValue(sb.toString(), BusStopApiResponse.class);
+        //해당 API는 잘못된 값을 삽입 시 빈 값을 반환함 - JSON PARSE Exception 발생 x
+//        log.info(sb.toString());
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,
+                true); //빈 문자열이 올 때(값이 없을 때) 처리
+        BusStopApiResponse cityCodeApiResponse = objectMapper.readValue(sb.toString(), BusStopApiResponse.class);
 
-            return BusStationResponse.from(cityCodeApiResponse);
-        } catch (JsonParseException e) {
-            int reasonCode = getBusApiErrorCode(sb);
+        return BusStationResponse.from(cityCodeApiResponse);
+    }
 
-            throw new BusAPIException(BusAPIErrorCode.getDescription(
-                    reasonCode)
-            );
+    private void validatePageNum(int pageNum) {
+        if (pageNum < 1) {
+            throw new IllegalArgumentException("page숫자는 1이상이어야합니다.");
+        }
+    }
+
+    private void validateCityCode(String cityCode) {
+        if (cityCode == null || cityCode.isEmpty()) {
+            throw new IllegalArgumentException("도시 코드는 비어있을 수 없습니다.");
+        }
+
+        for (int i = 0; i < cityCode.length(); i++) {
+            if (!Character.isDigit(cityCode.charAt(i))) {
+                throw new IllegalArgumentException("도시 코드는 숫자로만 구성되어야 합니다.");
+            }
         }
     }
 
@@ -193,18 +211,27 @@ public class BusApiService {
         return uri.toURL();
     }
 
-    private URL getBusStationUrl(String cityCode, int pageNum) throws MalformedURLException {
-        URI uri = UriComponentsBuilder.fromHttpUrl(BUS_STOP_API_URL)
+    private URL getBusStationUrl(String cityCode, int pageNum, String nodeNm, String nodeNo)
+            throws MalformedURLException {
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(BUS_STOP_API_URL)
                 .queryParam("serviceKey", serviceKey)
                 .queryParam("_type", "json")
                 .queryParam("numOfRows", "50")
                 .queryParam("pageNo", pageNum)
-                .queryParam("cityCode", cityCode)
+                .queryParam("cityCode", cityCode);
+
+        if (nodeNm != null) {
+            uriBuilder = uriBuilder
+                    .queryParam("nodeNm", nodeNm);
+        } else if (nodeNo != null) {
+            uriBuilder = uriBuilder
+                    .queryParam("nodeNo", nodeNo);
+        }
+
+        return uriBuilder
                 .encode(StandardCharsets.UTF_8)
                 .build()
-                .toUri();
-
-        return uri.toURL();
+                .toUri().toURL();
     }
 
     private URL getBusRouteURL(String cityCode, String nodeId) throws IOException {

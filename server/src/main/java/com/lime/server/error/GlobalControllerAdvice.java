@@ -13,4 +13,9 @@ public class GlobalControllerAdvice {
     public ResponseEntity<ErrorDto> bindBusAPIException(final BusAPIException e) {
         return ResponseEntity.internalServerError().body(new ErrorDto(BUS_API_EXCEPTION_MESSAGE));
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDto> bindIllegalArgumentException(final IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage()));
+    }
 }

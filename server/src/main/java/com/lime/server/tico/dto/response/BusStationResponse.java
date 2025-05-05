@@ -1,6 +1,7 @@
 package com.lime.server.tico.dto.response;
 
 import com.lime.server.busApi.dto.apiResponse.BusStopApiResponse;
+import com.lime.server.busApi.dto.apiResponse.BusStopApiResponse.Items;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,12 @@ public class BusStationResponse {
     public static BusStationResponse from(BusStopApiResponse busStopApiResponse) {
         List<BusStation> cities = new ArrayList<>();
 
-        for (BusStopApiResponse.BusStop busStop : busStopApiResponse.getResponse().getBody().getItems().getItem()) {
+        Items items = busStopApiResponse.getResponse().getBody().getItems();
+        if (items == null) {
+            return new BusStationResponse(new ArrayList<>());
+        }
+
+        for (BusStopApiResponse.BusStop busStop : items.getItem()) {
             cities.add(new BusStation(busStop.getNodeid(), busStop.getNodenm(), busStop.getNodeno()));
         }
 

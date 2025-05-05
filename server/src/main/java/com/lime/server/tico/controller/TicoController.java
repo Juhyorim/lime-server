@@ -8,13 +8,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RequestMapping("${api_prefix}/tico")
 @RequiredArgsConstructor
 @RestController
@@ -32,7 +35,7 @@ public class TicoController {
 
     @Operation(summary = "도시 목록 조회")
     @GetMapping("/city")
-    public ResponseEntity<CityResponse> getCities() throws IOException, JAXBException {
+    public ResponseEntity<CityResponse> getCities() throws IOException {
         CityResponse cityResponse = busApiService.getCities();
 
         return ResponseEntity.ok(cityResponse);
@@ -40,10 +43,14 @@ public class TicoController {
 
     @Operation(summary = "citycode 기반, 버스 정류소 조회")
     @GetMapping("/bus-station/{cityCode}/{pageNum}")
-    public ResponseEntity<BusStationResponse> getBusStations(@PathVariable(name = "cityCode") String cityCode,
-                                                             @PathVariable(name = "pageNum") int pageNum)
-            throws IOException {
-        BusStationResponse busStations = busApiService.getBusStations(cityCode, pageNum);
+    public ResponseEntity<BusStationResponse> getBusStations(@RequestParam(name = "cityCode") String cityCode,
+                                                             @RequestParam(name = "pageNum") int pageNum,
+                                                             @RequestParam(name = "nodeNm", required = false) String nodeNm,
+                                                             @RequestParam(name = "nodeNo", required = false) String nodeNo
+    ) throws IOException {
+        log.info(nodeNm);
+        log.info(nodeNo);
+        BusStationResponse busStations = busApiService.getBusStations(cityCode, pageNum, nodeNm, nodeNo);
 
         return ResponseEntity.ok(busStations);
     }
