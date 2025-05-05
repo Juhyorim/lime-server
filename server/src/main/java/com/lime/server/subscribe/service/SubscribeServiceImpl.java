@@ -3,6 +3,7 @@ package com.lime.server.subscribe.service;
 import com.lime.server.auth.entity.Member;
 import com.lime.server.auth.repository.MemberRepository;
 import com.lime.server.busApi.dto.apiResponse.BusArriveApiResponse;
+import com.lime.server.busApi.dto.apiResponse.BusArriveApiResponse.Items;
 import com.lime.server.busApi.service.BusApiService;
 import com.lime.server.subscribe.entity.BusArriveInfo;
 import com.lime.server.subscribe.entity.Subscription;
@@ -30,7 +31,8 @@ public class SubscribeServiceImpl implements SubscribeService {
     private final BusApiService busApiService;
 
     @Override
-    public void subscribe(String stationId, String routeId, String nodeName, String nodeNo, int cityCode, String routeNo) {
+    public void subscribe(String stationId, String routeId, String nodeName, String nodeNo, int cityCode,
+                          String routeNo) {
         Member findMember = memberRepository.findById(MEMBER_ID)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 없음"));
 
@@ -63,12 +65,17 @@ public class SubscribeServiceImpl implements SubscribeService {
             BusArriveApiResponse arriveBuses = busApiService.getArriveBuses(subscription.getCityCode(),
                     subscription.getNodeId());
 
-            for (BusArriveApiResponse.ArriveBus arriveBus: arriveBuses.getResponse().getBody().getItems().getItem()) {
+            Items items = arriveBuses.getResponse().getBody().getItems();
+            if (items == null) {
+                return;
+            }
+
+            for (BusArriveApiResponse.ArriveBus arriveBus : items.getItem()) {
                 if (arriveBus.getRouteid().equals(subscription.getRouteId())) {
                     LocalDateTime arriveTime = LocalDateTime.now().plusSeconds(arriveBus.getArrtime());
 
                     BusArriveInfo busArriveInfo = BusArriveInfo.of(
-                        arriveTime,
+                            arriveTime,
                             subscription.getCityCode(),
                             subscription.getNodeId(),
                             subscription.getNodeNo(),
@@ -80,5 +87,16 @@ public class SubscribeServiceImpl implements SubscribeService {
                 }
             }
         }
+    }
+
+    @Override
+    public List<BusArriveInfo> getBusInfo(Integer subscriptionId) {
+        Subscription subscription = subscribeRepository.findById(subscriptionId)
+                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 구독정보"));
+
+        List<BusArriveInfo> busArriveInfos = busArriveInfoRepository.findByCityCodeAndNodeIdAndRouteId(
+                subscription.getCityCode(), subscription.getNodeId(), subscription.getRouteId());
+
+        return busArriveInfos;
     }
 }
