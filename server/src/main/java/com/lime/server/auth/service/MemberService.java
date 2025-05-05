@@ -1,6 +1,6 @@
 package com.lime.server.auth.service;
 
-import com.lime.server.auth.Member;
+import com.lime.server.auth.entity.Member;
 import com.lime.server.auth.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

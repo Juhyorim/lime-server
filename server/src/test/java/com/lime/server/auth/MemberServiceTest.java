@@ -3,7 +3,7 @@ package com.lime.server.auth;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.lime.server.auth.service.JwtService;
+import com.lime.server.auth.entity.Member;
 import com.lime.server.auth.service.MemberService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

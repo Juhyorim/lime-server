@@ -1,6 +1,6 @@
-package com.lime.server.tico.controller;
+package com.lime.server.subscribe.controller;
 
-import com.lime.server.subscribe.Subscription;
+import com.lime.server.subscribe.entity.Subscription;
 import com.lime.server.subscribe.dto.SubscribeListResponse;
 import com.lime.server.subscribe.dto.SubscribeRequest;
 import com.lime.server.subscribe.service.SubscribeService;

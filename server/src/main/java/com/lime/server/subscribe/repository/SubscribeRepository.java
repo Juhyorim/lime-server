@@ -1,7 +1,7 @@
 package com.lime.server.subscribe.repository;
 
-import com.lime.server.auth.Member;
-import com.lime.server.subscribe.Subscription;
+import com.lime.server.auth.entity.Member;
+import com.lime.server.subscribe.entity.Subscription;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

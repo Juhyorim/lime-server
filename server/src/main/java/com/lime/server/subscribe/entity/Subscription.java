@@ -1,6 +1,6 @@
-package com.lime.server.subscribe;
+package com.lime.server.subscribe.entity;
 
-import com.lime.server.auth.Member;
+import com.lime.server.auth.entity.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

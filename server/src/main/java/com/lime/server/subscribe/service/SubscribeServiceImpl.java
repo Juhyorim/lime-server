@@ -1,11 +1,11 @@
 package com.lime.server.subscribe.service;
 
-import com.lime.server.auth.Member;
+import com.lime.server.auth.entity.Member;
 import com.lime.server.auth.repository.MemberRepository;
 import com.lime.server.busApi.dto.apiResponse.BusArriveApiResponse;
 import com.lime.server.busApi.service.BusApiService;
-import com.lime.server.subscribe.BusArriveInfo;
-import com.lime.server.subscribe.Subscription;
+import com.lime.server.subscribe.entity.BusArriveInfo;
+import com.lime.server.subscribe.entity.Subscription;
 import com.lime.server.subscribe.repository.BusArriveInfoRepository;
 import com.lime.server.subscribe.repository.SubscribeRepository;
 import java.io.IOException;

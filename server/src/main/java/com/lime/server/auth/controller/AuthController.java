@@ -1,6 +1,6 @@
 package com.lime.server.auth.controller;
 
-import com.lime.server.auth.Member;
+import com.lime.server.auth.entity.Member;
 import com.lime.server.auth.dto.LoginRequestDto;
 import com.lime.server.auth.dto.LoginResponseDto;
 import com.lime.server.auth.dto.SignupRequestDto;

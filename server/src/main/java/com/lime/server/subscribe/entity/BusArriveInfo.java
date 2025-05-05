@@ -1,4 +1,4 @@
-package com.lime.server.subscribe;
+package com.lime.server.subscribe.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
