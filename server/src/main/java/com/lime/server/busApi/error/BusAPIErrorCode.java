@@ -11,12 +11,23 @@ public enum BusAPIErrorCode {
     UNREGISTERED_IP_ERROR(32, "등록되지 않은 IP"),
     UNKNOWN_ERROR(99, "기타 에러");
 
+    static final String ETC_ERROR_DESCRIPTION = "알 수 없는 에러";
     final int code;
     final String description;
 
     BusAPIErrorCode(int code, String description) {
         this.code = code;
         this.description = description;
+    }
+
+    public static String getDescription(BusAPIErrorCode busAPIErrorCode) {
+        for (BusAPIErrorCode errorCode : BusAPIErrorCode.values()) {
+            if (errorCode.code == busAPIErrorCode.code) {
+                return errorCode.description;
+            }
+        }
+
+        return ETC_ERROR_DESCRIPTION;
     }
 
     public static String getDescription(int code) {
@@ -26,6 +37,6 @@ public enum BusAPIErrorCode {
             }
         }
 
-        return "알 수 없는 에러";
+        return ETC_ERROR_DESCRIPTION;
     }
 }
