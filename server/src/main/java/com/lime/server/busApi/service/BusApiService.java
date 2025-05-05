@@ -114,8 +114,9 @@ public class BusApiService {
         }
     }
 
-    public BusArriveApiResponse getArriveBuses(String cityCode, String nodeId) throws IOException {
+    public BusArriveApiResponse getArriveBuses(int cityCode, String nodeId) throws IOException {
         URL arriveBusesURL = getArriveBusesURL(cityCode, nodeId);
+        log.info("API호출: " + arriveBusesURL.toString());
         StringBuilder sb = getResponse(arriveBusesURL);
 
         try {
@@ -248,7 +249,7 @@ public class BusApiService {
         return uri.toURL();
     }
 
-    private URL getArriveBusesURL(String cityCode, String nodeId) throws IOException {
+    private URL getArriveBusesURL(int cityCode, String nodeId) throws IOException {
         URI uri = UriComponentsBuilder.fromHttpUrl(ARRIVE_BUS_API_URL)
                 .queryParam("serviceKey", serviceKey)
                 .queryParam("_type", "json")

@@ -24,7 +24,7 @@ public class SubscribeController {
     @PostMapping
     public ResponseEntity subscribe(@RequestBody SubscribeRequest request) {
         subscribeService.subscribe(request.stationId(), request.routeId(), request.nodeName(), request.nodeNo(),
-                request.cityCode());
+                request.cityCode(), request.routeNo());
 
         return ResponseEntity.ok().build();
     }

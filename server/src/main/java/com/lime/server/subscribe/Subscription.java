@@ -30,9 +30,10 @@ public class Subscription {
     private String nodeNo;
     private String nodeName;
     private String routeId;
+    private String routeNo;
 
-    public static Subscription of(Member member, int cityCode, String nodeId, String nodeNo, String nodeName, String routeId) {
-        Subscription subscription = new Subscription(null, member, cityCode, nodeId, nodeNo, nodeName, routeId);
+    public static Subscription of(Member member, int cityCode, String nodeId, String nodeNo, String nodeName, String routeId, String routeNo) {
+        Subscription subscription = new Subscription(null, member, cityCode, nodeId, nodeNo, nodeName, routeId, routeNo);
 
         return subscription;
     }
