@@ -1,6 +1,6 @@
 package com.lime.server.busApi.error;
 
-public enum APIErrorCode {
+public enum BusAPIErrorCode {
     APPLICATION_ERROR(1, "어플리케이션 에러"),
     HTTP_ERROR(4, "HTTP 에러"),
     NO_OPENAPI_SERVICE_ERROR(12, "해당 오픈 API 서비스가 없거나 폐기됨"),
@@ -14,8 +14,18 @@ public enum APIErrorCode {
     final int code;
     final String description;
 
-    APIErrorCode(int code, String description) {
+    BusAPIErrorCode(int code, String description) {
         this.code = code;
         this.description = description;
+    }
+
+    public static String getDescription(int code) {
+        for (BusAPIErrorCode errorCode : BusAPIErrorCode.values()) {
+            if (errorCode.code == code) {
+                return errorCode.description;
+            }
+        }
+
+        return "알 수 없는 에러";
     }
 }

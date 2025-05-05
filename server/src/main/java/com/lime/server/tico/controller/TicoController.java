@@ -5,6 +5,7 @@ import com.lime.server.tico.dto.response.BusStationResponse;
 import com.lime.server.tico.dto.response.CityResponse;
 import com.lime.server.busApi.service.BusApiService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class TicoController {
 
     @Operation(summary = "도시 목록 조회")
     @GetMapping("/city")
-    public ResponseEntity<CityResponse> getCities() throws IOException {
+    public ResponseEntity<CityResponse> getCities() throws IOException, JAXBException {
         CityResponse cityResponse = busApiService.getCities();
 
         return ResponseEntity.ok(cityResponse);

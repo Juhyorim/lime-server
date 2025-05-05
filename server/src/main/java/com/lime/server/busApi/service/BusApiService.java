@@ -1,17 +1,25 @@
 package com.lime.server.busApi.service;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lime.server.busApi.dto.apiResponse.BusArriveApiResponse;
 import com.lime.server.busApi.dto.apiResponse.BusStopApiResponse;
 import com.lime.server.busApi.dto.apiResponse.BusStopRouteApiResponse;
 import com.lime.server.busApi.dto.apiResponse.CityApiResponse;
+import com.lime.server.busApi.error.BusAPIErrorCode;
+import com.lime.server.busApi.error.BusAPIException;
+import com.lime.server.busApi.error.BusAPIErrorResponse;
 import com.lime.server.tico.dto.response.BusRouteResponse;
 import com.lime.server.tico.dto.response.BusStationResponse;
 import com.lime.server.tico.dto.response.CityResponse;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -33,42 +41,50 @@ public class BusApiService {
     @Value("${api.serviceKey}")
     public String serviceKey;
 
-    public CityResponse getCities() throws IOException {
+    public CityResponse getCities() throws IOException, JAXBException {
         URL url = getCitiesUrl();
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Content-type", "application/json");
         int responseCode = conn.getResponseCode();
-        log.info("Response code: " + responseCode);
+//        log.info("Response code: " + responseCode); //항상 200으로 들어옴
 
-        BufferedReader rd;
-        if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        } else {
-            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-        }
+        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
         StringBuilder sb = new StringBuilder();
         String line;
 
         while ((line = rd.readLine()) != null) {
             sb.append(line);
         }
+
         rd.close();
         conn.disconnect();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        CityApiResponse cityCodeApiResponse = objectMapper.readValue(sb.toString(), CityApiResponse.class);
+        ObjectMapper jsonMapper = new ObjectMapper();
+//        log.info(sb.toString());
 
-//        if ("00".equals(cityCodeApiResponse.getResponse().getHeader().getResultCode())) {
-//            CityApiResponse.Items cityApiItems = cityCodeApiResponse.getResponse().getBody().getItems();
-//            List<City> cities = cityApiItems.getItem();
-//            for (City city : cities) {
-//                log.info("City Code: " + city.getCitycode() + ", City Name: " + city.getCityname());
-//            }
-//        }
+        try {
+            CityApiResponse cityCodeApiResponse = jsonMapper.readValue(sb.toString(), CityApiResponse.class);
 
-        return CityResponse.from(cityCodeApiResponse);
+            return CityResponse.from(cityCodeApiResponse);
+        } catch (JsonParseException e) {
+            //에러메시지는 xml로 들어옴
+            JAXBContext context = JAXBContext.newInstance(BusAPIErrorResponse.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+
+            StringReader reader = new StringReader(sb.toString());
+            BusAPIErrorResponse response = (BusAPIErrorResponse) unmarshaller.unmarshal(reader);
+
+            log.info("errorMsg: " + response.getCmmMsgHeader().getErrMsg());
+            log.info("returnAuthMsg: " + response.getCmmMsgHeader().getReturnAuthMsg() + " " + response.getCmmMsgHeader().getReturnReasonCode());
+
+            int reasonCode = Integer.parseInt(response.getCmmMsgHeader().getReturnReasonCode());
+            throw new BusAPIException(BusAPIErrorCode.getDescription(
+                    reasonCode)
+            );
+        }
     }
 
     public BusStationResponse getBusStations(String cityCode, int pageNum) throws IOException {
