@@ -41,9 +41,9 @@ public class TicoController {
         return ResponseEntity.ok(cityResponse);
     }
 
-    @Operation(summary = "citycode 기반, 버스 정류소 조회")
-    @GetMapping("/bus-station/{cityCode}/{pageNum}")
-    public ResponseEntity<BusStationResponse> getBusStations(@RequestParam(name = "cityCode") String cityCode,
+    @Operation(summary = "citycode 기반 버스 정류소 조회")
+    @GetMapping("/bus-station/{cityCode}")
+    public ResponseEntity<BusStationResponse> getBusStations(@PathVariable(name = "cityCode") String cityCode,
                                                              @RequestParam(name = "pageNum") int pageNum,
                                                              @RequestParam(name = "nodeNm", required = false) String nodeNm,
                                                              @RequestParam(name = "nodeNo", required = false) String nodeNo
@@ -55,6 +55,7 @@ public class TicoController {
         return ResponseEntity.ok(busStations);
     }
 
+    @Operation(summary = "citycode, 정류소id기반 버스목록 조회")
     @GetMapping("/bus-route/{cityCode}/{nodeId}")
     public ResponseEntity<BusRouteResponse> getRoutes(@PathVariable(name = "cityCode") String cityCode,
                                                       @PathVariable(name = "nodeId") String nodeId)
@@ -64,6 +65,7 @@ public class TicoController {
         return ResponseEntity.ok(busRouteInfo);
     }
 
+    @Operation(summary = "citycode, 정류소id기반 도착예정 버스 조회")
     @GetMapping("/bus-arrive/{cityCode}/{nodeId}")
     public ResponseEntity<BusArriveApiResponse> getArriveBus(@PathVariable(name = "cityCode") int cityCode,
                                                       @PathVariable(name = "nodeId") String nodeId)

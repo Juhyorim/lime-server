@@ -2,9 +2,11 @@ package com.lime.server.auth.service;
 
 import com.lime.server.auth.entity.Member;
 import com.lime.server.auth.repository.MemberRepository;
+import com.lime.server.error.LoginUserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,15 +21,21 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Member login(String username, String password) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        username,
-                        password
-                )
-        );
+    public Member login(String username, String password) throws LoginUserNotFoundException {
+        Member findMember = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new LoginUserNotFoundException("찾을 수 없는 사용자"));
 
-        return memberRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("로그인 실패")); //@TODO 401 던지는 에러로 변경
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            username,
+                            password
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException("비밀번호가 틀렸습니다");
+        }
+
+        return findMember;
     }
 }

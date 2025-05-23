@@ -7,6 +7,7 @@ import com.lime.server.auth.dto.SignupRequestDto;
 import com.lime.server.auth.service.AuthService;
 import com.lime.server.auth.service.JwtService;
 import com.lime.server.auth.service.MemberService;
+import com.lime.server.error.LoginUserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto request) {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto request)
+            throws LoginUserNotFoundException {
         Member member = authService.login(request.username(), request.password());
         String token = jwtService.generateAccessToken(member);
 
