@@ -33,6 +33,15 @@ public class SubscribeController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "구독하기 버전2")
+    @PostMapping("/version2")
+    public ResponseEntity subscribeV2(@RequestBody SubscribeRequest request) {
+        subscribeService.subscribeV2(request.stationId(), request.routeId(), request.nodeName(), request.nodeNo(),
+                request.cityCode());
+
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "구독 정보 조회")
     @GetMapping
     public ResponseEntity<SubscribeListResponse> getList() {

@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class SchedulerConfig {
-    private final SubscribeService deviceService;
+    private final SubscribeService subscribeService;
 
     @Scheduled(fixedDelay = 90000)
     public void run() throws IOException {
-        deviceService.getSubscribedBusInfo();
+        subscribeService.getSubscribedBusInfo();
     }
 }
