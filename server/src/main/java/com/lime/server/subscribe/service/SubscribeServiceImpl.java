@@ -99,6 +99,7 @@ public class SubscribeServiceImpl implements SubscribeService {
                             subscription.getNodeNo(),
                             arriveBus.getNodenm(),
                             arriveBus.getRouteid(),
+                            arriveBus.getRouteno(),
                             arriveBus.getArrtime()
                     );
                     busArriveInfoRepository.save(busArriveInfo);
@@ -116,6 +117,7 @@ public class SubscribeServiceImpl implements SubscribeService {
                                 subscription.getNodeNo(),
                                 arriveBus.getNodenm(),
                                 arriveBus.getRouteid(),
+                                arriveBus.getRouteno(),
                                 arriveBus.getArrtime()
                         );
                         busArriveInfoRepository.save(busArriveInfo);
@@ -137,5 +139,11 @@ public class SubscribeServiceImpl implements SubscribeService {
 
         return busArriveInfoRepository.findByCityCodeAndNodeId(
                 subscription.getCityCode(), subscription.getNodeId());
+    }
+
+    @Override
+    public List<BusArriveInfo> getBusInfo(int cityCode, String nodeId, String routeId) {
+        return busArriveInfoRepository.findByCityCodeAndNodeIdAndRouteId(
+                cityCode, nodeId, routeId);
     }
 }

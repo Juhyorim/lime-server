@@ -22,11 +22,12 @@ public class BusArriveInfo {
     private String nodeNo;
     private String nodeName;
     private String routeId;
+    private String routeNo;
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private int remainTime;
 
-    public static BusArriveInfo of(LocalDateTime arriveTime, int cityCode, String nodeId, String nodeNo, String nodeName, String routeId, int remainTime) {
+    public static BusArriveInfo of(LocalDateTime arriveTime, int cityCode, String nodeId, String nodeNo, String nodeName, String routeId, String routeNo, int remainTime) {
         BusArriveInfo info = new BusArriveInfo();
         info.arriveTime = arriveTime;
         info.cityCode = cityCode;
@@ -34,6 +35,7 @@ public class BusArriveInfo {
         info.nodeNo = nodeNo;
         info.nodeName = nodeName;
         info.routeId = routeId;
+        info.routeNo = routeNo;
         info.remainTime = remainTime;
 
         return info;

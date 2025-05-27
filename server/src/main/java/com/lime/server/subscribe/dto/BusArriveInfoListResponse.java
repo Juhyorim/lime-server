@@ -18,15 +18,17 @@ public class BusArriveInfoListResponse {
     @AllArgsConstructor
     @Getter
     public static class BusArriveInfoResponse {
+        private String nodeId;
         private String nodeName;
         private String routeId;
+        private String routeNo;
         private LocalDateTime arriveTime;
         private int remainTime;
 
         public static List<BusArriveInfoResponse> from(List<BusArriveInfo> busArriveInfos) {
             List<BusArriveInfoResponse> response = new ArrayList<>();
             for (BusArriveInfo busArriveInfo : busArriveInfos) {
-                response.add(new BusArriveInfoResponse(busArriveInfo.getNodeName(), busArriveInfo.getRouteId(), busArriveInfo.getArriveTime(), busArriveInfo.getRemainTime()));
+                response.add(new BusArriveInfoResponse(busArriveInfo.getNodeId(), busArriveInfo.getNodeName(), busArriveInfo.getRouteId(), busArriveInfo.getRouteNo(),busArriveInfo.getArriveTime(), busArriveInfo.getRemainTime()));
             }
 
             return response;

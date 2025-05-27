@@ -15,4 +15,6 @@ public interface SubscribeService {
     void getSubscribedBusInfo() throws IOException;
 
     List<BusArriveInfo> getBusInfo(Integer subscriptionId);
+
+    List<BusArriveInfo> getBusInfo(int cityCode, String nodeId, String routeId);
 }

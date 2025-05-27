@@ -10,6 +10,7 @@ import com.lime.server.subscribe.service.SubscribeService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RequestMapping("${api_prefix}/subscribe")
 @RequiredArgsConstructor
 @RestController
@@ -54,6 +56,16 @@ public class SubscribeController {
     @GetMapping("/busInfo")
     public ResponseEntity<BusArriveInfoListResponse> getBusInfo(@RequestParam int subscriptionId) {
         List<BusArriveInfo> busArriveInfos = subscribeService.getBusInfo(subscriptionId);
+
+        return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.from(busArriveInfos)));
+    }
+
+    @Operation(summary = "버스정보 조회")
+    @GetMapping("/busInfo/version2")
+    public ResponseEntity<BusArriveInfoListResponse> getBusInfo(@RequestParam int cityCode,
+                                                                @RequestParam String nodeId,
+                                                                @RequestParam String routeId) {
+        List<BusArriveInfo> busArriveInfos = subscribeService.getBusInfo(cityCode, nodeId, routeId);
 
         return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.from(busArriveInfos)));
     }
