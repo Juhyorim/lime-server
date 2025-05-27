@@ -3,6 +3,8 @@ package com.lime.server.subscribe.config;
 import com.lime.server.subscribe.service.SubscribeService;
 import java.io.IOException;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,8 +26,9 @@ public class SchedulerConfig {
     }
 
     private boolean isNightTime() {
-        LocalTime currentTime = LocalTime.now();
-        log.info("테스트용 현재시간: " + currentTime);
+        ZonedDateTime koreaTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+        LocalTime currentTime = koreaTime.toLocalTime();
+        log.info("한국 현재시간: " + currentTime);
         LocalTime nightStart = LocalTime.of(23, 0); // 밤 11시
         LocalTime morningEnd = LocalTime.of(6, 0);  // 아침 6시
 
