@@ -1,22 +1,19 @@
 package com.lime.server.subscribe.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Document(collection = "bus_arrive_info")
 public class BusArriveInfo {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer id;
+    private String id;
 
     private LocalDateTime arriveTime;
 
