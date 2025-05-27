@@ -31,7 +31,53 @@ public class BusApiClient {
     @Value("${api.serviceKey}")
     public String serviceKey;
 
-    public StringBuilder getResponse(URL url) {
+    public int getBusApiErrorCode(StringBuilder sb) {
+        //에러메시지는 xml로 들어옴
+        try {
+            JAXBContext context = JAXBContext.newInstance(BusAPIErrorResponse.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+
+            StringReader reader = new StringReader(sb.toString());
+            BusAPIErrorResponse response = (BusAPIErrorResponse) unmarshaller.unmarshal(reader);
+
+            log.warn("errorMsg: " + response.getCmmMsgHeader().getErrMsg());
+            log.warn(
+                    "returnAuthMsg: " + response.getCmmMsgHeader().getReturnAuthMsg() + " " + response.getCmmMsgHeader()
+                            .getReturnReasonCode());
+
+            return Integer.parseInt(response.getCmmMsgHeader().getReturnReasonCode());
+        } catch (JAXBException e) {
+            log.warn("BusApiService - getBusApiErrorCode - 에러메시지 xml 파싱 실패");
+
+            throw new BusAPIException(BusAPIErrorCode.getDescription(BusAPIErrorCode.UNKNOWN_ERROR));
+        }
+    }
+
+    public StringBuilder getCitiesResponse() throws IOException {
+        URL citiesUrl = getCitiesUrl();
+
+        return getResponse(citiesUrl);
+    }
+
+    public StringBuilder getBusStationsResponse(String cityCode, int pageNum, String nodeNm, String nodeNo) throws IOException {
+        URL busStationUrl = getBusStationUrl(cityCode, pageNum, nodeNm, nodeNo);
+
+        return getResponse(busStationUrl);
+    }
+
+    public StringBuilder getBusRouteInfoResponse(String cityCode, String nodeId) throws IOException {
+        URL busRouteURL = getBusRouteURL(cityCode, nodeId);
+
+        return getResponse(busRouteURL);
+    }
+
+    public StringBuilder getArriveBusesResponse(int cityCode, String nodeId) throws IOException {
+        URL arriveBusesURL = getArriveBusesURL(cityCode, nodeId);
+
+        return getResponse(arriveBusesURL);
+    }
+
+    private StringBuilder getResponse(URL url) {
         HttpURLConnection conn = null;
         BufferedReader rd = null;
         StringBuilder sb = new StringBuilder();
@@ -67,36 +113,14 @@ public class BusApiClient {
         }
     }
 
-    public HttpURLConnection getHttpURLConnection(URL url) throws IOException {
+    private HttpURLConnection getHttpURLConnection(URL url) throws IOException {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Content-type", "application/json");
         return conn;
     }
 
-    public int getBusApiErrorCode(StringBuilder sb) {
-        //에러메시지는 xml로 들어옴
-        try {
-            JAXBContext context = JAXBContext.newInstance(BusAPIErrorResponse.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-
-            StringReader reader = new StringReader(sb.toString());
-            BusAPIErrorResponse response = (BusAPIErrorResponse) unmarshaller.unmarshal(reader);
-
-            log.warn("errorMsg: " + response.getCmmMsgHeader().getErrMsg());
-            log.warn(
-                    "returnAuthMsg: " + response.getCmmMsgHeader().getReturnAuthMsg() + " " + response.getCmmMsgHeader()
-                            .getReturnReasonCode());
-
-            return Integer.parseInt(response.getCmmMsgHeader().getReturnReasonCode());
-        } catch (JAXBException e) {
-            log.warn("BusApiService - getBusApiErrorCode - 에러메시지 xml 파싱 실패");
-
-            throw new BusAPIException(BusAPIErrorCode.getDescription(BusAPIErrorCode.UNKNOWN_ERROR));
-        }
-    }
-
-    public URL getCitiesUrl() throws MalformedURLException {
+    private URL getCitiesUrl() throws MalformedURLException {
         URI uri = UriComponentsBuilder.fromHttpUrl(CITY_CODE_API_URL)
                 .queryParam("serviceKey", serviceKey)
                 .queryParam("_type", "json")
@@ -107,7 +131,7 @@ public class BusApiClient {
         return uri.toURL();
     }
 
-    public URL getBusStationUrl(String cityCode, int pageNum, String nodeNm, String nodeNo)
+    private URL getBusStationUrl(String cityCode, int pageNum, String nodeNm, String nodeNo)
             throws MalformedURLException {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(BUS_STOP_API_URL)
                 .queryParam("serviceKey", serviceKey)
@@ -130,7 +154,7 @@ public class BusApiClient {
                 .toUri().toURL();
     }
 
-    public URL getBusRouteURL(String cityCode, String nodeId) throws IOException {
+    private URL getBusRouteURL(String cityCode, String nodeId) throws IOException {
         URI uri = UriComponentsBuilder.fromHttpUrl(BUS_STOP_ROUTE_API_URL)
                 .queryParam("serviceKey", serviceKey)
                 .queryParam("numOfRows", "100") //TODO 개선
@@ -144,7 +168,7 @@ public class BusApiClient {
         return uri.toURL();
     }
 
-    public URL getArriveBusesURL(int cityCode, String nodeId) throws IOException {
+    private URL getArriveBusesURL(int cityCode, String nodeId) throws IOException {
         URI uri = UriComponentsBuilder.fromHttpUrl(ARRIVE_BUS_API_URL)
                 .queryParam("serviceKey", serviceKey)
                 .queryParam("_type", "json")

@@ -13,7 +13,6 @@ import com.lime.server.tico.dto.response.BusRouteResponse;
 import com.lime.server.tico.dto.response.BusStationResponse;
 import com.lime.server.tico.dto.response.CityResponse;
 import java.io.IOException;
-import java.net.URL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,8 +24,7 @@ public class BusApiService {
     private final BusApiClient busApiClient;
 
     public CityResponse getCities() throws IOException {
-        URL citiesUrl = busApiClient.getCitiesUrl();
-        StringBuilder sb = busApiClient.getResponse(citiesUrl);
+        StringBuilder sb = busApiClient.getCitiesResponse();
 
         try {
             ObjectMapper jsonMapper = new ObjectMapper();
@@ -47,8 +45,7 @@ public class BusApiService {
         validateCityCode(cityCode);
         validatePageNum(pageNum);
 
-        URL busStationUrl = busApiClient.getBusStationUrl(cityCode, pageNum, nodeNm, nodeNo);
-        StringBuilder sb = busApiClient.getResponse(busStationUrl);
+        StringBuilder sb = busApiClient.getBusStationsResponse(cityCode, pageNum, nodeNm, nodeNo);
 
         //해당 API는 잘못된 값을 삽입 시 빈 값을 반환함 - JSON PARSE Exception 발생 x
         ObjectMapper objectMapper = new ObjectMapper();
@@ -79,8 +76,7 @@ public class BusApiService {
 
     //버스정류소에 도착하는 버스목록 조회
     public BusRouteResponse getBusRouteInfo(String cityCode, String nodeId) throws IOException {
-        URL busRouteURL = busApiClient.getBusRouteURL(cityCode, nodeId);
-        StringBuilder sb = busApiClient.getResponse(busRouteURL);
+        StringBuilder sb = busApiClient.getBusRouteInfoResponse(cityCode, nodeId);
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -99,9 +95,7 @@ public class BusApiService {
     }
 
     public BusArriveApiResponse getArriveBuses(int cityCode, String nodeId) throws IOException {
-        URL arriveBusesURL = busApiClient.getArriveBusesURL(cityCode, nodeId);
-        log.info("API호출: " + arriveBusesURL.toString());
-        StringBuilder sb = busApiClient.getResponse(arriveBusesURL);
+        StringBuilder sb = busApiClient.getArriveBusesResponse(cityCode, nodeId);
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
