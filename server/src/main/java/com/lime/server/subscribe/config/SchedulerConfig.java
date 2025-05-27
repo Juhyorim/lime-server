@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class SchedulerConfig {
+    private static final LocalTime NIGHT_START = LocalTime.of(23, 0);
+    private static final LocalTime MORNING_END = LocalTime.of(6, 0);
+
     private final SubscribeService subscribeService;
 
     @Scheduled(fixedDelay = 90000)
@@ -28,10 +31,7 @@ public class SchedulerConfig {
     private boolean isNightTime() {
         ZonedDateTime koreaTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
         LocalTime currentTime = koreaTime.toLocalTime();
-        log.info("한국 현재시간: " + currentTime);
-        LocalTime nightStart = LocalTime.of(23, 0); // 밤 11시
-        LocalTime morningEnd = LocalTime.of(6, 0);  // 아침 6시
 
-        return currentTime.isAfter(nightStart) || currentTime.isBefore(morningEnd);
+        return currentTime.isAfter(NIGHT_START) || currentTime.isBefore(MORNING_END);
     }
 }
