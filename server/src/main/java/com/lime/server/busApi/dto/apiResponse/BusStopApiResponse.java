@@ -1,6 +1,7 @@
 package com.lime.server.busApi.dto.apiResponse;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,7 +45,7 @@ public class BusStopApiResponse {
     public static class Items {
         //하나만 오는 경우 단일 객체로 오는 것 처리
         @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-        private List<BusStop> item;
+        private List<BusStop> item = new ArrayList<>();
     }
 
     @Getter

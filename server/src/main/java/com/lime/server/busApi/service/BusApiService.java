@@ -68,7 +68,6 @@ public class BusApiService {
         StringBuilder sb = getResponse(busStationUrl);
 
         //해당 API는 잘못된 값을 삽입 시 빈 값을 반환함 - JSON PARSE Exception 발생 x
-//        log.info(sb.toString());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,
                 true); //빈 문자열이 올 때(값이 없을 때) 처리
@@ -95,12 +94,14 @@ public class BusApiService {
         }
     }
 
+    //버스정류소에 도착하는 버스목록 조회
     public BusRouteResponse getBusRouteInfo(String cityCode, String nodeId) throws IOException {
         URL busRouteURL = getBusRouteURL(cityCode, nodeId);
         StringBuilder sb = getResponse(busRouteURL);
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
             BusStopRouteApiResponse busStopRouteApiResponse = objectMapper.readValue(sb.toString(),
                     BusStopRouteApiResponse.class);
 
