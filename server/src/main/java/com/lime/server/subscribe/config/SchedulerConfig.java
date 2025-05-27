@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class SchedulerConfig {
     private final SubscribeService subscribeService;
 
-    @Scheduled(fixedDelay = 90000)
+    @Scheduled(fixedDelay = 30000)
     public void run() throws IOException {
         subscribeService.getSubscribedBusInfo();
     }
