@@ -47,9 +47,8 @@ public class Subscription {
     }
 
     //버스정류소만 구독
-    public static Subscription of(Member member, int cityCode, String nodeId, String nodeNo, String nodeName,
-                                  String routeId) {
-        Subscription subscription = new Subscription(null, member, cityCode, nodeId, nodeNo, nodeName, routeId, "",
+    public static Subscription of(Member member, int cityCode, String nodeId, String nodeNo, String nodeName) {
+        Subscription subscription = new Subscription(null, member, cityCode, nodeId, nodeNo, nodeName, "", "",
                 SubscriptionType.ONLY_NODE);
 
         return subscription;
