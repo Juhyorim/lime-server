@@ -1,6 +1,6 @@
 package com.lime.server.busApi.service;
 
-import com.lime.server.tico.dto.response.BusRouteResponse;
+import com.lime.server.busApi.dto.BusRouteResponse;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;

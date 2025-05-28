@@ -1,4 +1,4 @@
-package com.lime.server.tico.dto.response;
+package com.lime.server.busApi.dto;
 
 import com.lime.server.busApi.dto.apiResponse.BusStopApiResponse;
 import com.lime.server.busApi.dto.apiResponse.BusStopApiResponse.Items;

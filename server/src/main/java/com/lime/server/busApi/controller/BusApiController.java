@@ -1,10 +1,10 @@
-package com.lime.server.tico.controller;
+package com.lime.server.busApi.controller;
 
 import com.lime.server.busApi.dto.apiResponse.BusArriveApiResponse;
-import com.lime.server.tico.dto.response.BusRouteResponse;
-import com.lime.server.tico.dto.response.BusStationResponse;
-import com.lime.server.tico.dto.response.CityResponse;
 import com.lime.server.busApi.service.BusApiService;
+import com.lime.server.busApi.dto.BusRouteResponse;
+import com.lime.server.busApi.dto.BusStationResponse;
+import com.lime.server.busApi.dto.CityResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@RequestMapping("${api_prefix}/tico")
+@RequestMapping("${api_prefix}/bus-info")
 @RequiredArgsConstructor
 @RestController
-public class TicoController {
+public class BusApiController {
     private final BusApiService busApiService;
-
-    //memo: 구미시 citycode = 37050
-    //거상빌딩 nodeId = GMB4, nodeNo = 10004
 
     @Operation(summary = "테스트")
     @PostMapping("/test")
@@ -42,9 +39,9 @@ public class TicoController {
     }
 
     @Operation(summary = "citycode 기반 버스 정류소 조회")
-    @GetMapping("/bus-station/{cityCode}")
-    public ResponseEntity<BusStationResponse> getBusStations(@PathVariable(name = "cityCode") String cityCode,
-                                                             @RequestParam(name = "pageNum") int pageNum,
+    @GetMapping("/bus-station")
+    public ResponseEntity<BusStationResponse> getBusStations(@RequestParam(name = "cityCode") String cityCode,
+                                                             @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
                                                              @RequestParam(name = "nodeNm", required = false) String nodeNm,
                                                              @RequestParam(name = "nodeNo", required = false) String nodeNo
     ) throws IOException {
@@ -56,9 +53,9 @@ public class TicoController {
     }
 
     @Operation(summary = "citycode, 정류소id기반 버스목록 조회")
-    @GetMapping("/bus-route/{cityCode}/{nodeId}")
-    public ResponseEntity<BusRouteResponse> getRoutes(@PathVariable(name = "cityCode") String cityCode,
-                                                      @PathVariable(name = "nodeId") String nodeId)
+    @GetMapping("/bus-route")
+    public ResponseEntity<BusRouteResponse> getRoutes(@RequestParam(name = "cityCode") String cityCode,
+                                                      @RequestParam(name = "nodeId") String nodeId)
             throws IOException {
         BusRouteResponse busRouteInfo = busApiService.getBusRouteInfo(cityCode, nodeId);
 
@@ -66,9 +63,9 @@ public class TicoController {
     }
 
     @Operation(summary = "citycode, 정류소id기반 도착예정 버스 조회")
-    @GetMapping("/bus-arrive/{cityCode}/{nodeId}")
-    public ResponseEntity<BusArriveApiResponse> getArriveBus(@PathVariable(name = "cityCode") int cityCode,
-                                                      @PathVariable(name = "nodeId") String nodeId)
+    @GetMapping("/bus-arrive")
+    public ResponseEntity<BusArriveApiResponse> getArriveBus(@RequestParam(name = "cityCode") int cityCode,
+                                                             @RequestParam(name = "nodeId") String nodeId)
             throws IOException {
         BusArriveApiResponse busRouteInfo = busApiService.getArriveBuses(cityCode, nodeId);
 
