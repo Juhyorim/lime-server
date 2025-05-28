@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,18 +24,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class SubscribeServiceImpl implements SubscribeService {
-    //memberId는 1로 고정
-    private static final int MEMBER_ID = 1;
-
     private final SubscribeRepository subscribeRepository;
     private final BusArriveInfoRepository busArriveInfoRepository;
     private final MemberRepository memberRepository;
     private final BusApiService busApiService;
 
     @Override
-    public void subscribe(String stationId, String routeId, String nodeName, String nodeNo, int cityCode,
+    public void subscribe(Member member, String stationId, String routeId, String nodeName, String nodeNo, int cityCode,
                           String routeNo) {
-        Member findMember = memberRepository.findById(MEMBER_ID)
+        Member findMember = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 없음"));
 
         Subscription subscription = subscribeRepository.findByMemberAndNodeIdAndRouteId(findMember, stationId, routeId)
@@ -45,12 +43,14 @@ public class SubscribeServiceImpl implements SubscribeService {
         }
 
         subscription = Subscription.of(findMember, cityCode, stationId, nodeNo, nodeName, routeId, routeNo);
+        member.addSubscription(subscription);
+
         subscribeRepository.save(subscription);
     }
 
     @Override
-    public void subscribeV2(String stationId, String nodeName, String nodeNo, int cityCode) {
-        Member findMember = memberRepository.findById(MEMBER_ID)
+    public void subscribeV2(Member member, String stationId, String nodeName, String nodeNo, int cityCode) {
+        Member findMember = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 없음"));
 
         Subscription subscription = subscribeRepository.findByMemberAndNodeId(findMember, stationId)
@@ -61,17 +61,50 @@ public class SubscribeServiceImpl implements SubscribeService {
         }
 
         subscription = Subscription.of(findMember, cityCode, stationId, nodeNo, nodeName);
+        member.addSubscription(subscription);
         subscribeRepository.save(subscription);
     }
 
     @Override
-    public List<Subscription> getList() {
-        Member findMember = memberRepository.findById(MEMBER_ID)
+    public List<Subscription> getList(Member member) {
+        Member findMember = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 없음"));
 
         List<Subscription> subscriptions = subscribeRepository.findByMember(findMember);
 
         return subscriptions;
+    }
+
+    @Override
+    public List<BusArriveInfo> getBusInfo(Member member, Integer subscriptionId) {
+        Subscription subscription = subscribeRepository.findById(subscriptionId)
+                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 구독정보"));
+
+        if (subscription.getRouteId() == null || subscription.getRouteId().isEmpty()) {
+            return busArriveInfoRepository.findByCityCodeAndNodeId(
+                    subscription.getCityCode(), subscription.getNodeId());
+        }
+
+        return busArriveInfoRepository.findByCityCodeAndNodeId(
+                subscription.getCityCode(), subscription.getNodeId());
+    }
+
+    @Override
+    public List<BusArriveInfo> getBusInfo(int cityCode, String nodeId, String routeId) {
+        return busArriveInfoRepository.findByCityCodeAndNodeIdAndRouteId(
+                cityCode, nodeId, routeId);
+    }
+
+    @Override
+    public void cancel(Member member, Integer subscribeId) {
+        Subscription subscription = subscribeRepository.findById(subscribeId)
+                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 구독"));
+
+        if (!subscription.getMember().getId().equals(member.getId())) {
+            throw new AccessDeniedException("권한이 없는 유저");
+        }
+
+        subscribeRepository.delete(subscription);
     }
 
     //스케줄러 로직
@@ -125,33 +158,5 @@ public class SubscribeServiceImpl implements SubscribeService {
                 }
             }
         }
-    }
-
-    @Override
-    public List<BusArriveInfo> getBusInfo(Integer subscriptionId) {
-        Subscription subscription = subscribeRepository.findById(subscriptionId)
-                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 구독정보"));
-
-        if (subscription.getRouteId() == null || subscription.getRouteId().isEmpty()) {
-            return busArriveInfoRepository.findByCityCodeAndNodeId(
-                    subscription.getCityCode(), subscription.getNodeId());
-        }
-
-        return busArriveInfoRepository.findByCityCodeAndNodeId(
-                subscription.getCityCode(), subscription.getNodeId());
-    }
-
-    @Override
-    public List<BusArriveInfo> getBusInfo(int cityCode, String nodeId, String routeId) {
-        return busArriveInfoRepository.findByCityCodeAndNodeIdAndRouteId(
-                cityCode, nodeId, routeId);
-    }
-
-    @Override
-    public void cancel(Integer subscribeId) {
-        Subscription subscription = subscribeRepository.findById(subscribeId)
-                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 구독"));
-
-        subscribeRepository.delete(subscription);
     }
 }

@@ -71,4 +71,8 @@ public class Member implements UserDetails {
     public String getPassword() {
         return password;
     }
+
+    public void addSubscription(Subscription subscription) {
+        this.subscriptions.add(subscription);
+    }
 }

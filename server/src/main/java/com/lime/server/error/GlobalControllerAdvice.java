@@ -3,6 +3,7 @@ package com.lime.server.error;
 import com.lime.server.busApi.error.BusAPIException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,5 +32,11 @@ public class GlobalControllerAdvice {
     public ResponseEntity<ErrorDto> bindBadCredentialsException(final BadCredentialsException e) {
         //로그인 아이디 또는 비밀번호 에러
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDto(e.getMessage()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorDto> bindAccessDeniedException(final AccessDeniedException e) {
+        //로그인 아이디 또는 비밀번호 에러
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDto(e.getMessage()));
     }
 }
