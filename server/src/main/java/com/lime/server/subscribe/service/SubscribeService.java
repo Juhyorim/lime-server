@@ -17,4 +17,6 @@ public interface SubscribeService {
     List<BusArriveInfo> getBusInfo(Integer subscriptionId);
 
     List<BusArriveInfo> getBusInfo(int cityCode, String nodeId, String routeId);
+
+    void cancel(Integer subscribeId);
 }

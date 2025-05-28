@@ -146,4 +146,12 @@ public class SubscribeServiceImpl implements SubscribeService {
         return busArriveInfoRepository.findByCityCodeAndNodeIdAndRouteId(
                 cityCode, nodeId, routeId);
     }
+
+    @Override
+    public void cancel(Integer subscribeId) {
+        Subscription subscription = subscribeRepository.findById(subscribeId)
+                .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 구독"));
+
+        subscribeRepository.delete(subscription);
+    }
 }
