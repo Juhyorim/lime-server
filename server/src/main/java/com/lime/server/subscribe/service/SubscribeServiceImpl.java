@@ -10,6 +10,7 @@ import com.lime.server.subscribe.entity.Subscription;
 import com.lime.server.subscribe.entity.SubscriptionType;
 import com.lime.server.subscribe.repository.BusArriveInfoRepository;
 import com.lime.server.subscribe.repository.SubscribeRepository;
+import com.lime.server.util.KoreanTimeUtil;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +29,7 @@ public class SubscribeServiceImpl implements SubscribeService {
     private final BusArriveInfoRepository busArriveInfoRepository;
     private final MemberRepository memberRepository;
     private final BusApiService busApiService;
+    private final KoreanTimeUtil timeUtil;
 
     @Override
     public void subscribe(Member member, String stationId, String routeId, String nodeName, String nodeNo, int cityCode,
@@ -123,7 +125,7 @@ public class SubscribeServiceImpl implements SubscribeService {
 
             if (subscription.getType().equals(SubscriptionType.ONLY_NODE)){
                 for (BusArriveApiResponse.ArriveBus arriveBus : items.getItem()) {
-                    LocalDateTime arriveTime = LocalDateTime.now().plusSeconds(arriveBus.getArrtime());
+                    LocalDateTime arriveTime = timeUtil.getCurrentDateTime().plusSeconds(arriveBus.getArrtime());
 
                     BusArriveInfo busArriveInfo = BusArriveInfo.of(
                             arriveTime,
@@ -141,7 +143,7 @@ public class SubscribeServiceImpl implements SubscribeService {
                 //TODO API를 한 번만 호출할 수단 필요
                 for (BusArriveApiResponse.ArriveBus arriveBus : items.getItem()) {
                     if (arriveBus.getRouteid().equals(subscription.getRouteId())) {
-                        LocalDateTime arriveTime = LocalDateTime.now().plusSeconds(arriveBus.getArrtime());
+                        LocalDateTime arriveTime = timeUtil.getCurrentDateTime().plusSeconds(arriveBus.getArrtime());
 
                         BusArriveInfo busArriveInfo = BusArriveInfo.of(
                                 arriveTime,
