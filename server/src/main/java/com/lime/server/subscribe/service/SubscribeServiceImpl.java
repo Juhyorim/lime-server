@@ -43,7 +43,7 @@ public class SubscribeServiceImpl implements SubscribeService {
         }
 
         subscription = Subscription.of(findMember, cityCode, stationId, nodeNo, nodeName, routeId, routeNo);
-        member.addSubscription(subscription);
+        findMember.addSubscription(subscription);
 
         subscribeRepository.save(subscription);
     }
@@ -61,7 +61,7 @@ public class SubscribeServiceImpl implements SubscribeService {
         }
 
         subscription = Subscription.of(findMember, cityCode, stationId, nodeNo, nodeName);
-        member.addSubscription(subscription);
+        findMember.addSubscription(subscription);
         subscribeRepository.save(subscription);
     }
 
