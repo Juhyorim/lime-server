@@ -8,10 +8,12 @@ import com.lime.server.busApi.service.BusApiService;
 import com.lime.server.subscribe.entity.BusArriveInfo;
 import com.lime.server.subscribe.entity.Subscription;
 import com.lime.server.subscribe.entity.SubscriptionType;
+import com.lime.server.subscribe.repository.BusArriveInfoCustomRepository;
 import com.lime.server.subscribe.repository.BusArriveInfoRepository;
 import com.lime.server.subscribe.repository.SubscribeRepository;
 import com.lime.server.util.KoreanTimeUtil;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SubscribeServiceImpl implements SubscribeService {
     private final SubscribeRepository subscribeRepository;
     private final BusArriveInfoRepository busArriveInfoRepository;
+    private final BusArriveInfoCustomRepository busArriveInfoCustomRepository;
     private final MemberRepository memberRepository;
     private final BusApiService busApiService;
     private final KoreanTimeUtil timeUtil;
@@ -77,7 +80,7 @@ public class SubscribeServiceImpl implements SubscribeService {
         return subscriptions;
     }
 
-    @Override
+    @Override //구독정보로 버스 도착 시간 찾기
     public List<BusArriveInfo> getBusInfo(Member member, Integer subscriptionId) {
         Subscription subscription = subscribeRepository.findById(subscriptionId)
                 .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 구독정보"));
@@ -91,10 +94,20 @@ public class SubscribeServiceImpl implements SubscribeService {
                 subscription.getCityCode(), subscription.getNodeId());
     }
 
-    @Override
+    @Override //도시코드, 정류장, 버스로 도착시간 찾기
     public List<BusArriveInfo> getBusInfo(int cityCode, String nodeId, String routeId) {
         return busArriveInfoRepository.findByCityCodeAndNodeIdAndRouteId(
                 cityCode, nodeId, routeId);
+    }
+
+    @Override
+    public List<BusArriveInfo> getBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate) {
+        LocalDateTime startOfDay = localDate.atStartOfDay(); // 00:00:00
+        LocalDateTime endOfDay = localDate.plusDays(1).atStartOfDay();
+        log.info("time:" + startOfDay + " " + endOfDay);
+
+        return busArriveInfoCustomRepository.findByCityCodeAndNodeIdAndRouteIdAndDate(
+                cityCode, nodeId, routeId, localDate);
     }
 
     @Override
