@@ -139,6 +139,9 @@ public class SubscribeServiceImpl implements SubscribeService {
             if (subscription.getType().equals(SubscriptionType.ONLY_NODE)){
                 for (BusArriveApiResponse.ArriveBus arriveBus : items.getItem()) {
                     LocalDateTime arriveTime = timeUtil.getCurrentDateTime().plusSeconds(arriveBus.getArrtime());
+//                    log.info("currentTime:"  +timeUtil.getCurrentDateTime());
+//                    log.info("plusTime:"  +arriveTime.toString());
+//                    log.info("plusGap:"  +arriveBus.getArrtime());
 
                     BusArriveInfo busArriveInfo = BusArriveInfo.of(
                             arriveTime, //한국시간으로 아무리 넣어도 9시간이 빠짐. TODO 일단 9시간 설정, 나중에 시간처리 다시하기
@@ -148,7 +151,8 @@ public class SubscribeServiceImpl implements SubscribeService {
                             arriveBus.getNodenm(),
                             arriveBus.getRouteid(),
                             arriveBus.getRouteno(),
-                            arriveBus.getArrtime()
+                            arriveBus.getArrtime(),
+                            timeUtil.getCurrentDateTime()
                     );
                     busArriveInfoRepository.save(busArriveInfo);
                 }
@@ -166,7 +170,8 @@ public class SubscribeServiceImpl implements SubscribeService {
                                 arriveBus.getNodenm(),
                                 arriveBus.getRouteid(),
                                 arriveBus.getRouteno(),
-                                arriveBus.getArrtime()
+                                arriveBus.getArrtime(),
+                                timeUtil.getCurrentDateTime()
                         );
                         busArriveInfoRepository.save(busArriveInfo);
                     }
