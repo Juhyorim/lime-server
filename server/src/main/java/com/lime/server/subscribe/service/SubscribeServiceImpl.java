@@ -133,11 +133,12 @@ public class SubscribeServiceImpl implements SubscribeService {
 
             Items items = arriveBuses.getResponse().getBody().getItems();
             if (items == null) {
-                return;
+                continue;
             }
 
             if (subscription.getType().equals(SubscriptionType.ONLY_NODE)){
                 for (BusArriveApiResponse.ArriveBus arriveBus : items.getItem()) {
+                    log.info(arriveBus.getNodenm() + ": " + arriveBus.getArrtime());
                     LocalDateTime arriveTime = timeUtil.getCurrentDateTime().plusSeconds(arriveBus.getArrtime());
 //                    log.info("currentTime:"  +timeUtil.getCurrentDateTime());
 //                    log.info("plusTime:"  +arriveTime.toString());
@@ -159,22 +160,21 @@ public class SubscribeServiceImpl implements SubscribeService {
             } else if (subscription.getType().equals(SubscriptionType.WITH_ROUTE)) {
                 //TODO API를 한 번만 호출할 수단 필요
                 for (BusArriveApiResponse.ArriveBus arriveBus : items.getItem()) {
-                    if (arriveBus.getRouteid().equals(subscription.getRouteId())) {
-                        LocalDateTime arriveTime = timeUtil.getCurrentDateTime().plusSeconds(arriveBus.getArrtime());
+                    LocalDateTime arriveTime = timeUtil.getCurrentDateTime().plusSeconds(arriveBus.getArrtime());
 
-                        BusArriveInfo busArriveInfo = BusArriveInfo.of(
-                                arriveTime,
-                                subscription.getCityCode(),
-                                subscription.getNodeId(),
-                                subscription.getNodeNo(),
-                                arriveBus.getNodenm(),
-                                arriveBus.getRouteid(),
-                                arriveBus.getRouteno(),
-                                arriveBus.getArrtime(),
-                                timeUtil.getCurrentDateTime()
-                        );
-                        busArriveInfoRepository.save(busArriveInfo);
-                    }
+                    BusArriveInfo busArriveInfo = BusArriveInfo.of(
+                            arriveTime,
+                            subscription.getCityCode(),
+                            subscription.getNodeId(),
+                            subscription.getNodeNo(),
+                            arriveBus.getNodenm(),
+                            arriveBus.getRouteid(),
+                            arriveBus.getRouteno(),
+                            arriveBus.getArrtime(),
+                            timeUtil.getCurrentDateTime()
+                    );
+                    busArriveInfoRepository.save(busArriveInfo);
+
                 }
             }
         }
