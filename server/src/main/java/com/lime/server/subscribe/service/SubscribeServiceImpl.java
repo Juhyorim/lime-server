@@ -141,7 +141,7 @@ public class SubscribeServiceImpl implements SubscribeService {
                     LocalDateTime arriveTime = timeUtil.getCurrentDateTime().plusSeconds(arriveBus.getArrtime());
 
                     BusArriveInfo busArriveInfo = BusArriveInfo.of(
-                            arriveTime.plusHours(9), //한국시간으로 아무리 넣어도 9시간이 빠짐. TODO 일단 9시간 설정, 나중에 시간처리 다시하기
+                            arriveTime, //한국시간으로 아무리 넣어도 9시간이 빠짐. TODO 일단 9시간 설정, 나중에 시간처리 다시하기
                             subscription.getCityCode(),
                             subscription.getNodeId(),
                             subscription.getNodeNo(),
