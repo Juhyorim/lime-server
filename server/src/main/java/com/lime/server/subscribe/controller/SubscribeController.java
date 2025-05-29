@@ -9,6 +9,7 @@ import com.lime.server.subscribe.dto.SubscribeListResponse;
 import com.lime.server.subscribe.dto.SubscribeRequest;
 import com.lime.server.subscribe.service.SubscribeService;
 import io.swagger.v3.oas.annotations.Operation;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +65,7 @@ public class SubscribeController {
         return ResponseEntity.ok(SubscribeListResponse.from(subscriptionList));
     }
 
-    @Operation(summary = "구독 버스정보 조회")
+    @Operation(summary = "구독 버스도착 정보 조회")
     @GetMapping("/busInfo")
     public ResponseEntity<BusArriveInfoListResponse> getBusInfo(@AuthenticationPrincipal Member member, @RequestParam int subscriptionId) {
         List<BusArriveInfo> busArriveInfos = subscribeService.getBusInfo(member, subscriptionId);
@@ -72,12 +73,23 @@ public class SubscribeController {
         return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.from(busArriveInfos)));
     }
 
-    @Operation(summary = "그냥 버스정보 조회")
+    @Operation(summary = "그냥 버스도착 정보 조회")
     @GetMapping("/busInfo/version2")
     public ResponseEntity<BusArriveInfoListResponse> getBusInfo(@RequestParam int cityCode,
                                                                 @RequestParam String nodeId,
                                                                 @RequestParam String routeId) {
         List<BusArriveInfo> busArriveInfos = subscribeService.getBusInfo(cityCode, nodeId, routeId);
+
+        return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.from(busArriveInfos)));
+    }
+
+    @Operation(summary = "특정날짜 버스도착 정보 조회")
+    @GetMapping("/busInfo/version3")
+    public ResponseEntity<BusArriveInfoListResponse> getBusInfoWithDate(@RequestParam int cityCode,
+                                                                        @RequestParam String nodeId,
+                                                                        @RequestParam String routeId,
+                                                                        @RequestParam LocalDate localDate) {
+        List<BusArriveInfo> busArriveInfos = subscribeService.getBusInfoWithDate(cityCode, nodeId, routeId, localDate);
 
         return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.from(busArriveInfos)));
     }

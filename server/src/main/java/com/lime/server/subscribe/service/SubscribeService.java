@@ -4,6 +4,7 @@ import com.lime.server.auth.entity.Member;
 import com.lime.server.subscribe.entity.BusArriveInfo;
 import com.lime.server.subscribe.entity.Subscription;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface SubscribeService {
@@ -18,6 +19,9 @@ public interface SubscribeService {
     List<BusArriveInfo> getBusInfo(Member member, Integer subscriptionId);
 
     List<BusArriveInfo> getBusInfo(int cityCode, String nodeId, String routeId);
+
+    //도시코드, 정류장, 버스로 특정날짜 도착시간 찾기
+    List<BusArriveInfo> getBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate);
 
     void cancel(Member member, Integer subscribeId);
 }
