@@ -16,13 +16,21 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         try {
             chain.doFilter(req, res);
         } catch (ExpiredJwtException e) {
-            setErrorResponse(HttpStatus.UNAUTHORIZED, res, "만료된 토큰입니다.");
+            setErrorResponse(HttpStatus.UNAUTHORIZED, req, res, "만료된 토큰입니다.");
         } catch (JwtException | IOException e) {
-            setErrorResponse(HttpStatus.UNAUTHORIZED, res, e.getMessage());
+            setErrorResponse(HttpStatus.UNAUTHORIZED, req, res, e.getMessage());
         }
     }
 
-    public void setErrorResponse(HttpStatus status, HttpServletResponse res, String errorMessage) throws IOException {
+    public void setErrorResponse(HttpStatus status, HttpServletRequest req, HttpServletResponse res, String errorMessage) throws IOException {
+        String origin = req.getHeader("Origin");
+        if ("https://tico-lime.netlify.app".equals(origin) || "http://localhost:5173".equals(origin)) {
+            res.setHeader("Access-Control-Allow-Origin", origin);
+            res.setHeader("Access-Control-Allow-Credentials", "true");
+            res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Requested-With");
+        }
+
         res.setStatus(status.value());
         res.setContentType("application/json; charset=UTF-8");
 

@@ -136,10 +136,12 @@ public class SubscribeServiceImpl implements SubscribeService {
                 continue;
             }
 
+            LocalDateTime currentTime = timeUtil.getCurrentDateTime();
+
             if (subscription.getType().equals(SubscriptionType.ONLY_NODE)){
                 for (BusArriveApiResponse.ArriveBus arriveBus : items.getItem()) {
                     log.info(arriveBus.getNodenm() + ": " + arriveBus.getArrtime());
-                    LocalDateTime arriveTime = timeUtil.getCurrentDateTime().plusSeconds(arriveBus.getArrtime());
+                    LocalDateTime arriveTime = currentTime.plusSeconds(arriveBus.getArrtime());
 //                    log.info("currentTime:"  +timeUtil.getCurrentDateTime());
 //                    log.info("plusTime:"  +arriveTime.toString());
 //                    log.info("plusGap:"  +arriveBus.getArrtime());
@@ -160,7 +162,7 @@ public class SubscribeServiceImpl implements SubscribeService {
             } else if (subscription.getType().equals(SubscriptionType.WITH_ROUTE)) {
                 //TODO API를 한 번만 호출할 수단 필요
                 for (BusArriveApiResponse.ArriveBus arriveBus : items.getItem()) {
-                    LocalDateTime arriveTime = timeUtil.getCurrentDateTime().plusSeconds(arriveBus.getArrtime());
+                    LocalDateTime arriveTime = currentTime.plusSeconds(arriveBus.getArrtime());
 
                     BusArriveInfo busArriveInfo = BusArriveInfo.of(
                             arriveTime,
