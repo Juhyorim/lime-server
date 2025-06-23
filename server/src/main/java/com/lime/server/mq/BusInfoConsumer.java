@@ -30,7 +30,7 @@ public class BusInfoConsumer {
     )
     public void processBusStop(BusStopMessage message) {
         try {
-            log.info("메시지 처리 시작: {}", message);
+//            log.info("메시지 처리 시작: {}", message);
 
             // 버스 API 호출
             BusArriveApiResponse arriveBuses = busApiService.getArriveBuses(message.getCityCode(),
@@ -61,7 +61,7 @@ public class BusInfoConsumer {
                 busArriveInfoRepository.save(busArriveInfo);
             }
 
-            log.info("메시지 처리 완료: {}", message.getNodeId());
+//            log.info("메시지 처리 완료: {}", message.getNodeId());
 
         } catch (Exception e) {
             log.error("메시지 처리 실패: {}", message, e);

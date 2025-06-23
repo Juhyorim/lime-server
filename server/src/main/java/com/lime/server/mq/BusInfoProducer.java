@@ -19,7 +19,7 @@ public class BusInfoProducer {
                 RabbitConfig.BUS_ROUTING_KEY,
                 message
         );
-        log.info("메시지 발송: {}", message);
+//        log.info("메시지 발송: {}", message);
     }
 
     // 우선순위 메시지 발송

@@ -36,11 +36,11 @@ public class SchedulerConfig {
                     subscription.getNodeId(),
                     subscription.getNodeNo()
             );
-            log.info(subscription.getCityCode() + "/" + subscription.getNodeId() + "/" + subscription.getNodeNo());
+//            log.info(subscription.getCityCode() + "/" + subscription.getNodeId() + "/" + subscription.getNodeNo());
 
             busInfoProducer.sendBusStopMessage(message);
         }
 
-        log.info("{}개 정류소 MQ 메시지 발송 완료", subscriptions.size());
+//        log.info("{}개 정류소 MQ 메시지 발송 완료", subscriptions.size());
     }
 }
