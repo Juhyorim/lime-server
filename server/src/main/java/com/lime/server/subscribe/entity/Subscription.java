@@ -37,14 +37,14 @@ public class Subscription {
     @Enumerated(EnumType.STRING)
     private SubscriptionType type;
 
-    //버스정류소 + 버스까지 구독
-    public static Subscription of(Member member, int cityCode, String nodeId, String nodeNo, String nodeName,
-                                  String routeId, String routeNo) {
-        Subscription subscription = new Subscription(null, member, cityCode, nodeId, nodeNo, nodeName, routeId, routeNo,
-                SubscriptionType.WITH_ROUTE);
-
-        return subscription;
-    }
+    //버스정류소 + 버스까지 구독 - 일단 deprecated @TODO
+//    public static Subscription of(Member member, int cityCode, String nodeId, String nodeNo, String nodeName,
+//                                  String routeId, String routeNo) {
+//        Subscription subscription = new Subscription(null, member, cityCode, nodeId, nodeNo, nodeName, routeId, routeNo,
+//                SubscriptionType.WITH_ROUTE);
+//
+//        return subscription;
+//    }
 
     //버스정류소만 구독
     public static Subscription of(Member member, int cityCode, String nodeId, String nodeNo, String nodeName) {

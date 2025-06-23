@@ -2,17 +2,13 @@ package com.lime.server.subscribe.service;
 
 import com.lime.server.auth.entity.Member;
 import com.lime.server.auth.repository.MemberRepository;
-import com.lime.server.busApi.dto.apiResponse.BusArriveApiResponse;
-import com.lime.server.busApi.dto.apiResponse.BusArriveApiResponse.Items;
 import com.lime.server.busApi.service.BusApiService;
 import com.lime.server.subscribe.entity.BusArriveInfo;
 import com.lime.server.subscribe.entity.Subscription;
-import com.lime.server.subscribe.entity.SubscriptionType;
 import com.lime.server.subscribe.repository.BusArriveInfoCustomRepository;
 import com.lime.server.subscribe.repository.BusArriveInfoRepository;
 import com.lime.server.subscribe.repository.SubscribeRepository;
 import com.lime.server.util.KoreanTimeUtil;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,20 +33,21 @@ public class SubscribeServiceImpl implements SubscribeService {
     @Override
     public void subscribe(Member member, String stationId, String routeId, String nodeName, String nodeNo, int cityCode,
                           String routeNo) {
-        Member findMember = memberRepository.findById(member.getId())
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 없음"));
-
-        Subscription subscription = subscribeRepository.findByMemberAndNodeIdAndRouteId(findMember, stationId, routeId)
-                .orElseGet(() -> null);
-
-        if (subscription != null) {
-            throw new IllegalArgumentException("이미 존재하는 구독정보");
-        }
-
-        subscription = Subscription.of(findMember, cityCode, stationId, nodeNo, nodeName, routeId, routeNo);
-        findMember.addSubscription(subscription);
-
-        subscribeRepository.save(subscription);
+        //버스 구독은 다시생각 @TODO
+//        Member findMember = memberRepository.findById(member.getId())
+//                .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 없음"));
+//
+//        Subscription subscription = subscribeRepository.findByMemberAndNodeIdAndRouteId(findMember, stationId, routeId)
+//                .orElseGet(() -> null);
+//
+//        if (subscription != null) {
+//            throw new IllegalArgumentException("이미 존재하는 구독정보");
+//        }
+//
+//        subscription = Subscription.of(findMember, cityCode, stationId, nodeNo, nodeName, routeId, routeNo);
+//        findMember.addSubscription(subscription);
+//
+//        subscribeRepository.save(subscription);
     }
 
     @Override
@@ -120,61 +117,5 @@ public class SubscribeServiceImpl implements SubscribeService {
         }
 
         subscribeRepository.delete(subscription);
-    }
-
-    //스케줄러 로직
-    @Override
-    public void getSubscribedBusInfo() throws IOException {
-        List<Subscription> subscriptions = subscribeRepository.findAll();
-
-        for (Subscription subscription : subscriptions) {
-            BusArriveApiResponse arriveBuses = busApiService.getArriveBuses(subscription.getCityCode(),
-                    subscription.getNodeId());
-
-            Items items = arriveBuses.getResponse().getBody().getItems();
-            if (items == null) {
-                continue;
-            }
-
-            LocalDateTime currentTime = timeUtil.getCurrentDateTime();
-
-            if (subscription.getType().equals(SubscriptionType.ONLY_NODE)){
-                for (BusArriveApiResponse.ArriveBus arriveBus : items.getItem()) {
-                    LocalDateTime arriveTime = currentTime.plusSeconds(arriveBus.getArrtime());
-
-                    BusArriveInfo busArriveInfo = BusArriveInfo.of(
-                            arriveTime,
-                            subscription.getCityCode(),
-                            subscription.getNodeId(),
-                            subscription.getNodeNo(),
-                            arriveBus.getNodenm(),
-                            arriveBus.getRouteid(),
-                            arriveBus.getRouteno(),
-                            arriveBus.getArrtime(),
-                            timeUtil.getCurrentDateTime()
-                    );
-                    busArriveInfoRepository.save(busArriveInfo);
-                }
-            } else if (subscription.getType().equals(SubscriptionType.WITH_ROUTE)) {
-                //TODO API를 한 번만 호출할 수단 필요
-                for (BusArriveApiResponse.ArriveBus arriveBus : items.getItem()) {
-                    LocalDateTime arriveTime = currentTime.plusSeconds(arriveBus.getArrtime());
-
-                    BusArriveInfo busArriveInfo = BusArriveInfo.of(
-                            arriveTime,
-                            subscription.getCityCode(),
-                            subscription.getNodeId(),
-                            subscription.getNodeNo(),
-                            arriveBus.getNodenm(),
-                            arriveBus.getRouteid(),
-                            arriveBus.getRouteno(),
-                            arriveBus.getArrtime(),
-                            timeUtil.getCurrentDateTime()
-                    );
-                    busArriveInfoRepository.save(busArriveInfo);
-
-                }
-            }
-        }
     }
 }

@@ -3,7 +3,6 @@ package com.lime.server.subscribe.service;
 import com.lime.server.auth.entity.Member;
 import com.lime.server.subscribe.entity.BusArriveInfo;
 import com.lime.server.subscribe.entity.Subscription;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,7 +13,7 @@ public interface SubscribeService {
 
     List<Subscription> getList(Member member);
 
-    void getSubscribedBusInfo() throws IOException;
+//    void getSubscribedBusInfo() throws IOException;
 
     List<BusArriveInfo> getBusInfo(Member member, Integer subscriptionId);
 
