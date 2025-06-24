@@ -22,7 +22,7 @@ public class SchedulerConfig {
     private final SubscribeRepository subscribeRepository;
     private final BusInfoProducer busInfoProducer;
 
-    @Scheduled(fixedDelay = 90000)
+    @Scheduled(fixedDelay = 300000) //5분
     public void run() throws IOException {
         if (timeUtil.isNightTime()) {
             return; // 밤 11시 이후이거나 아침 6시 이전인 경우 API 호출 x
