@@ -51,6 +51,9 @@ dependencies {
 
     //swagger
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
+
+    //log
+    implementation 'com.github.loki4j:loki-logback-appender:1.4.2'
 }
 
 tasks.named('test') {
@@ -61,6 +64,7 @@ task copyYML(type: Copy){
     copy {
         from './lime-server-private/common/'
         include "application.yml"
+        include "logback-spring.xml"
         into './src/main/resources'
     }
 }
