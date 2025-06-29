@@ -64,4 +64,17 @@ public class BusArriveInfoCustomRepository {
         //Criteria: { "cityCode" : 37050, "nodeId" : "GMB4", "routeId" : "GMB9120", "arriveTime" : { "$gte" : { "$date" : "2025-05-26T15:00:00Z"}, "$lt" : { "$date" : "2025-05-27T15:00:00Z"}}} fields: Document{{}} sort: { "cityCode" : 37050, "nodeId" : "GMB4", "routeId" : "GMB9120", "arriveTime" : { "$gte" : { "$java" : 2025-05-27T00:00 }, "$lt" : { "$java" : 2025-05-28T00:00 } } }
         return mongoTemplate.find(query, BusArriveInfo.class);
     }
+
+    public List<BusArriveInfo> findByCityCodeAndNodeIdAndDate(int cityCode, String nodeId, LocalDate localDate) {
+        LocalDateTime startOfDay = localDate.atStartOfDay();
+        LocalDateTime endOfDay = localDate.plusDays(1).atStartOfDay();
+
+        //@TODO mongodb 시간 비교 관련 비교 공부하기
+        Query query = new Query();
+        query.addCriteria(Criteria.where("cityCode").is(cityCode)
+                .and("nodeId").is(nodeId)
+                .and("arriveTime").gte(startOfDay).lt(endOfDay));
+
+        return mongoTemplate.find(query, BusArriveInfo.class);
+    }
 }

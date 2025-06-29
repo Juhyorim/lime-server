@@ -97,11 +97,18 @@ public class SubscribeServiceImpl implements SubscribeService {
                 cityCode, nodeId, routeId);
     }
 
+    @Override //도시코드, 정류장으로 도착시간 찾기 - 스케줄러에서 사용
+    public List<BusArriveInfo> getBusInfoYesterday(int cityCode, String nodeId) {
+        LocalDate yesterday = timeUtil.getCurrentDateTime().toLocalDate().minusDays(1);
+
+        return busArriveInfoCustomRepository.findByCityCodeAndNodeIdAndDate(
+                cityCode, nodeId, yesterday);
+    }
+
     @Override
     public List<BusArriveInfo> getBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate) {
         LocalDateTime startOfDay = localDate.atStartOfDay(); // 00:00:00
         LocalDateTime endOfDay = localDate.plusDays(1).atStartOfDay();
-        log.info("time:" + startOfDay + " " + endOfDay);
 
         return busArriveInfoCustomRepository.findByCityCodeAndNodeIdAndRouteIdAndDate(
                 cityCode, nodeId, routeId, localDate);
