@@ -94,4 +94,14 @@ public class SubscribeController {
 
         return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.fromArranged(busArriveInfos)));
     }
+
+    @Operation(summary = "특정날짜에 정류소 전체 버스도착 정보 조회")
+    @GetMapping("/busInfo/version4")
+    public ResponseEntity<BusArriveInfoListResponse> getAllBusInfoWithDate(@RequestParam int cityCode,
+                                                                        @RequestParam String nodeId,
+                                                                        @RequestParam LocalDate localDate) {
+        List<ArrangedBusArriveInfo> busArriveInfos = subscribeService.getAllBusInfoWithDate(cityCode, nodeId, localDate);
+
+        return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.fromArranged(busArriveInfos)));
+    }
 }

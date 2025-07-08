@@ -124,6 +124,14 @@ public class SubscribeServiceImpl implements SubscribeService {
     }
 
     @Override
+    public List<ArrangedBusArriveInfo> getAllBusInfoWithDate(int cityCode, String nodeId, LocalDate localDate) {
+//        LocalDateTime startOfDay = localDate.atStartOfDay(); // 00:00:00
+//        LocalDateTime endOfDay = localDate.plusDays(1).atStartOfDay();
+        return arrangedBusArriveInfoCustomRepository.findByCityCodeAndNodeIdAndDate(
+                cityCode, nodeId, localDate);
+    }
+
+    @Override
     public void cancel(Member member, Integer subscribeId) {
         Subscription subscription = subscribeRepository.findById(subscribeId)
                 .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 구독"));
