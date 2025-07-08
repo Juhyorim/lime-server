@@ -3,6 +3,7 @@ package com.lime.server.subscribe.controller;
 import com.lime.server.auth.entity.Member;
 import com.lime.server.subscribe.dto.BusArriveInfoListResponse;
 import com.lime.server.subscribe.dto.BusArriveInfoListResponse.BusArriveInfoResponse;
+import com.lime.server.subscribe.entity.ArrangedBusArriveInfo;
 import com.lime.server.subscribe.entity.BusArriveInfo;
 import com.lime.server.subscribe.entity.Subscription;
 import com.lime.server.subscribe.dto.SubscribeListResponse;
@@ -89,8 +90,8 @@ public class SubscribeController {
                                                                         @RequestParam String nodeId,
                                                                         @RequestParam String routeId,
                                                                         @RequestParam LocalDate localDate) {
-        List<BusArriveInfo> busArriveInfos = subscribeService.getBusInfoWithDate(cityCode, nodeId, routeId, localDate);
+        List<ArrangedBusArriveInfo> busArriveInfos = subscribeService.getBusInfoWithDate(cityCode, nodeId, routeId, localDate);
 
-        return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.from(busArriveInfos)));
+        return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.fromArranged(busArriveInfos)));
     }
 }

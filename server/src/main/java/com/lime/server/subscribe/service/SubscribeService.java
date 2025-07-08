@@ -1,6 +1,7 @@
 package com.lime.server.subscribe.service;
 
 import com.lime.server.auth.entity.Member;
+import com.lime.server.subscribe.entity.ArrangedBusArriveInfo;
 import com.lime.server.subscribe.entity.BusArriveInfo;
 import com.lime.server.subscribe.entity.Subscription;
 import java.time.LocalDate;
@@ -20,9 +21,10 @@ public interface SubscribeService {
     List<BusArriveInfo> getBusInfo(int cityCode, String nodeId, String routeId);
 
     List<BusArriveInfo> getBusInfoYesterday(int cityCode, String nodeId);
+    List<BusArriveInfo> getBusInfoWithDate2(int cityCode, String nodeId, LocalDate localDate);
 
     //도시코드, 정류장, 버스로 특정날짜 도착시간 찾기
-    List<BusArriveInfo> getBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate);
+    List<ArrangedBusArriveInfo> getBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate);
 
     void cancel(Member member, Integer subscribeId);
 }

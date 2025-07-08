@@ -10,8 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "bus_arrive_info")
-public class BusArriveInfo { //정리안된 raw 데이터
+@Document(collection = "arranged_bus_arrive_info")
+public class ArrangedBusArriveInfo { //정리된 버스정보
     @Id
     private String id;
 
@@ -27,8 +27,10 @@ public class BusArriveInfo { //정리안된 raw 데이터
     private LocalDateTime createdAt;
     private int remainTime;
 
-    public static BusArriveInfo of(LocalDateTime arriveTime, int cityCode, String nodeId, String nodeNo, String nodeName, String routeId, String routeNo, int remainTime, LocalDateTime current) {
-        BusArriveInfo info = new BusArriveInfo();
+    public static ArrangedBusArriveInfo of(LocalDateTime arriveTime, int cityCode, String nodeId, String nodeNo,
+                                           String nodeName, String routeId, String routeNo, int remainTime,
+                                           LocalDateTime current) {
+        ArrangedBusArriveInfo info = new ArrangedBusArriveInfo();
         info.arriveTime = arriveTime;
         info.cityCode = cityCode;
         info.nodeId = nodeId;
@@ -40,5 +42,10 @@ public class BusArriveInfo { //정리안된 raw 데이터
         info.createdAt = current;
 
         return info;
+    }
+
+    public static ArrangedBusArriveInfo from(BusArriveInfo info) {
+        return ArrangedBusArriveInfo.of(info.getArriveTime(), info.getCityCode(), info.getNodeId(), info.getNodeNo(),
+                info.getNodeName(), info.getRouteId(), info.getRouteNo(), info.getRemainTime(), info.getCreatedAt());
     }
 }

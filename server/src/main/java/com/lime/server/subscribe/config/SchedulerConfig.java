@@ -2,19 +2,20 @@ package com.lime.server.subscribe.config;
 
 import com.lime.server.mq.BusInfoProducer;
 import com.lime.server.mq.dto.BusStopMessage;
+import com.lime.server.subscribe.entity.ArrangedBusArriveInfo;
 import com.lime.server.subscribe.entity.BusArriveInfo;
 import com.lime.server.subscribe.entity.Subscription;
+import com.lime.server.subscribe.repository.ArrangedBusArriveInfoRepository;
 import com.lime.server.subscribe.repository.SubscribeRepository;
 import com.lime.server.subscribe.service.SubscribeService;
 import com.lime.server.util.KoreanTimeUtil;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,6 +32,7 @@ public class SchedulerConfig {
     private final SubscribeService subscribeService;
     private final SubscribeRepository subscribeRepository;
     private final BusInfoProducer busInfoProducer;
+    private final ArrangedBusArriveInfoRepository arrangedBusArriveInfoRepository;
 
     @Scheduled(fixedDelay = 300000) //5분
     public void run() throws IOException {
@@ -53,17 +55,22 @@ public class SchedulerConfig {
         log.info("{}개 정류소 MQ 메시지 발송 완료", subscriptions.size());
     }
 
-//    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") //밤 12시 정각에 수행 //@TODO 제대로 동작하는 알고리즘 찾으면 켜기
+//    @Scheduled(fixedDelay = 3000000)
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") //밤 12시 정각에 수행 //@TODO 제대로 동작하는 알고리즘 찾으면 켜기
     public void cleanBusInfo() {
         List<Subscription> subscriptions = subscribeRepository.findAll();
 
+        log.info("12시 정돈 스케줄링 시작, 시간 {}", timeUtil.getCurrentDateTime());
         for (Subscription subscription : subscriptions) {
+            log.info("구독번호 {} 정돈시작", subscription.getId());
 //            if (subscription.getCityCode() != 37050) { //테스트용 코드
 //                continue;
 //            }
 //            if (!subscription.getNodeId().equals("GMB4")) {
 //                continue;
 //            }
+//            for (int t=1; t<30; t++) {
+//                LocalDate findTime = timeUtil.getCurrentDateTime().toLocalDate().minusDays(t);
 
             try {
                 List<BusArriveInfo> busArriveInfoList = subscribeService.getBusInfoYesterday(subscription.getCityCode(),
@@ -75,14 +82,16 @@ public class SchedulerConfig {
 
                 AnalysisResult result = analyzeAndCleanBusData(busArriveInfoList);
 
-                log.info("정류장 {} 처리 완료 - 분석: {}대, 삭제: {}건",
+                log.info("정류장 {} 정리 완료 - 분석: {}대, 삭제: {}건",
                         subscription.getNodeId(), result.getAnalyzedBusCount(), result.getDeletedRecordCount());
 
             } catch (Exception e) {
                 log.error("처리 실패 - 도시: {}, 정류장: {}",
                         subscription.getCityCode(), subscription.getNodeId(), e);
             }
+//            }
         }
+        log.info("12시 정돈 스케줄링 끝");
     }
 
     private AnalysisResult analyzeAndCleanBusData(List<BusArriveInfo> busArriveInfoList) {
@@ -104,24 +113,14 @@ public class SchedulerConfig {
                 routeData.sort(Comparator.comparing(BusArriveInfo::getCreatedAt));
 
                 // 4. 유효한 버스 도착 데이터 찾기
-                Set<String> validDataIds = findValidBusArrivalData(routeData);
+                List<BusArriveInfo> validDataList = findValidBusArrivalData(routeData);
 
-                // 5. 유효하지 않은 데이터 삭제
-                List<BusArriveInfo> dataToDelete = routeData.stream()
-                        .filter(data -> !validDataIds.contains(data.getId()))
-                        .collect(Collectors.toList());
+                //5-2. 새로운 버스 도착 데이터로 저장
+                addNewData(validDataList);
 
-                if (!dataToDelete.isEmpty()) {
-//                    busArriveInfoRepository.deleteAll(dataToDelete);
-                    deletedRecordCount += dataToDelete.size();
+//                log.info("🗑노선 {} - {}건 유지", routeId, validDataList.size());
 
-                    log.info("🗑노선 {} - {}건 삭제, {}건 유지",
-                            routeId, dataToDelete.size(), validDataIds.size());
-                } else {
-                    log.info("노선 {} - 삭제할 데이터 없음, {}건 모두 유지", routeId, validDataIds.size());
-                }
-
-                analyzedBusCount += validDataIds.size();
+                analyzedBusCount += validDataList.size();
 
             } catch (Exception e) {
                 log.warn("노선 {} 분석 실패", routeId, e);
@@ -131,19 +130,25 @@ public class SchedulerConfig {
         return new AnalysisResult(analyzedBusCount, deletedRecordCount);
     }
 
-    private Set<String> findValidBusArrivalData(List<BusArriveInfo> routeData) {
-        Set<String> validIds = new HashSet<>();
+    //유효한 raw data를 새로운 테이블에 저장
+    private void addNewData(List<BusArriveInfo> validDataList) {
+        List<ArrangedBusArriveInfo> newList = new ArrayList<>();
+        for (BusArriveInfo busArriveInfo : validDataList) {
+            newList.add(ArrangedBusArriveInfo.from(busArriveInfo));
+        }
+
+        arrangedBusArriveInfoRepository.saveAll(newList);
+    }
+
+    private List<BusArriveInfo> findValidBusArrivalData(List<BusArriveInfo> routeData) {
+        List<BusArriveInfo> validIds = new ArrayList<>();
 
         if (routeData.size() <= 1) {
-            return routeData.stream()
-                    .map(BusArriveInfo::getId)
-                    .collect(Collectors.toSet());
+            return routeData;
         }
 
         // createdAt 순으로 정렬된 데이터를 순차적으로 비교하여 세그먼트 분리
         List<List<BusArriveInfo>> busSegments = segmentBusesByConditions(routeData);
-
-//        log.info("{}개 버스 세그먼트 발견", busSegments.size());
 
         // 각 버스 세그먼트에서 가장 신뢰할 수 있는 데이터 선택
         for (int i = 0; i < busSegments.size(); i++) {
@@ -157,7 +162,8 @@ public class SchedulerConfig {
                     .orElse(null);
 
             if (mostReliableData != null) {
-                validIds.add(mostReliableData.getId());
+                validIds.add(mostReliableData);
+//                log.info("time: " + mostReliableData.getArriveTime());
 //                log.info("{}번째 버스: {} 도착예정, remainTime={}초 선택 ({}건 중에서)",
 //                        i + 1,
 //                        mostReliableData.getArriveTime().toString().substring(11, 19),
@@ -229,13 +235,9 @@ public class SchedulerConfig {
             return true;
         }
 
-        // 2) arriveTime의 간격이 300초(5분) 이상 클 때
+        // 2) arriveTime의 간격이 900초(15분) 이상 클 때
         long arriveTimeDiffSeconds = ChronoUnit.SECONDS.between(prev.getArriveTime(), curr.getArriveTime());
-        if (Math.abs(arriveTimeDiffSeconds) >= 300) {
-//            log.info("버스 교체 감지 (arriveTime 간격): {} → {} ({}초 차이)",
-//                    prev.getArriveTime().toString().substring(11, 19),
-//                    curr.getArriveTime().toString().substring(11, 19),
-//                    Math.abs(arriveTimeDiffSeconds));
+        if (Math.abs(arriveTimeDiffSeconds) >= 900) {
             return true;
         }
 

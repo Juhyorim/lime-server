@@ -3,8 +3,10 @@ package com.lime.server.subscribe.service;
 import com.lime.server.auth.entity.Member;
 import com.lime.server.auth.repository.MemberRepository;
 import com.lime.server.busApi.service.BusApiService;
+import com.lime.server.subscribe.entity.ArrangedBusArriveInfo;
 import com.lime.server.subscribe.entity.BusArriveInfo;
 import com.lime.server.subscribe.entity.Subscription;
+import com.lime.server.subscribe.repository.ArrangedBusArriveInfoCustomRepository;
 import com.lime.server.subscribe.repository.BusArriveInfoCustomRepository;
 import com.lime.server.subscribe.repository.BusArriveInfoRepository;
 import com.lime.server.subscribe.repository.SubscribeRepository;
@@ -29,6 +31,7 @@ public class SubscribeServiceImpl implements SubscribeService {
     private final MemberRepository memberRepository;
     private final BusApiService busApiService;
     private final KoreanTimeUtil timeUtil;
+    private final ArrangedBusArriveInfoCustomRepository arrangedBusArriveInfoCustomRepository;
 
     @Override
     public void subscribe(Member member, String stationId, String routeId, String nodeName, String nodeNo, int cityCode,
@@ -105,12 +108,18 @@ public class SubscribeServiceImpl implements SubscribeService {
                 cityCode, nodeId, yesterday);
     }
 
+    @Override //도시코드, 정류장으로 도착시간 찾기 - 스케줄러에서 사용
+    public List<BusArriveInfo> getBusInfoWithDate2(int cityCode, String nodeId, LocalDate localDate) {
+        return busArriveInfoCustomRepository.findByCityCodeAndNodeIdAndDate(
+                cityCode, nodeId, localDate);
+    }
+
     @Override
-    public List<BusArriveInfo> getBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate) {
+    public List<ArrangedBusArriveInfo> getBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate) {
         LocalDateTime startOfDay = localDate.atStartOfDay(); // 00:00:00
         LocalDateTime endOfDay = localDate.plusDays(1).atStartOfDay();
 
-        return busArriveInfoCustomRepository.findByCityCodeAndNodeIdAndRouteIdAndDate(
+        return arrangedBusArriveInfoCustomRepository.findByCityCodeAndNodeIdAndRouteIdAndDate(
                 cityCode, nodeId, routeId, localDate);
     }
 
