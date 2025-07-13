@@ -74,28 +74,28 @@ public class SubscribeController {
         return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.from(busArriveInfos)));
     }
 
-    @Operation(summary = "그냥 버스도착 정보 조회")
+    @Operation(summary = "그냥 버스도착 정보 조회(deprecated)", description = "테스트용 버스 도착정보 조회")
     @GetMapping("/busInfo/version2")
     public ResponseEntity<BusArriveInfoListResponse> getBusInfo(@RequestParam int cityCode,
                                                                 @RequestParam String nodeId,
                                                                 @RequestParam String routeId) {
-        List<BusArriveInfo> busArriveInfos = subscribeService.getBusInfo(cityCode, nodeId, routeId);
+//        List<BusArriveInfo> busArriveInfos = subscribeService.getBusInfo(cityCode, nodeId, routeId);
 
-        return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.from(busArriveInfos)));
+        return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "특정날짜 버스도착 정보 조회")
+    @Operation(summary = "[가공됨] 특정날짜 버스도착 정보 조회")
     @GetMapping("/busInfo/version3")
     public ResponseEntity<BusArriveInfoListResponse> getBusInfoWithDate(@RequestParam int cityCode,
                                                                         @RequestParam String nodeId,
                                                                         @RequestParam String routeId,
                                                                         @RequestParam LocalDate localDate) {
-        List<ArrangedBusArriveInfo> busArriveInfos = subscribeService.getBusInfoWithDate(cityCode, nodeId, routeId, localDate);
+        List<ArrangedBusArriveInfo> busArriveInfos = subscribeService.getArrangedBusInfoWithDate(cityCode, nodeId, routeId, localDate);
 
         return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.fromArranged(busArriveInfos)));
     }
 
-    @Operation(summary = "특정날짜에 정류소 전체 버스도착 정보 조회")
+    @Operation(summary = "[가공됨, 전체] 특정날짜 전체 버스도착 정보 조회")
     @GetMapping("/busInfo/version4")
     public ResponseEntity<BusArriveInfoListResponse> getAllBusInfoWithDate(@RequestParam int cityCode,
                                                                         @RequestParam String nodeId,
@@ -103,5 +103,16 @@ public class SubscribeController {
         List<ArrangedBusArriveInfo> busArriveInfos = subscribeService.getAllBusInfoWithDate(cityCode, nodeId, localDate);
 
         return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.fromArranged(busArriveInfos)));
+    }
+
+    @Operation(summary = "[가공안됨] 특정날짜 버스도착 정보 조회")
+    @GetMapping("/busInfo/version5")
+    public ResponseEntity<BusArriveInfoListResponse> getArrangedBusInfoWithDate(@RequestParam int cityCode,
+                                                                        @RequestParam String nodeId,
+                                                                        @RequestParam String routeId,
+                                                                        @RequestParam LocalDate localDate) {
+        List<BusArriveInfo> busArriveInfos = subscribeService.getBusInfoWithDate(cityCode, nodeId, routeId, localDate);
+
+        return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.from(busArriveInfos)));
     }
 }

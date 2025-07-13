@@ -115,7 +115,16 @@ public class SubscribeServiceImpl implements SubscribeService {
     }
 
     @Override
-    public List<ArrangedBusArriveInfo> getBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate) {
+    public List<BusArriveInfo> getBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate) {
+        LocalDateTime startOfDay = localDate.atStartOfDay(); // 00:00:00
+        LocalDateTime endOfDay = localDate.plusDays(1).atStartOfDay();
+
+        return busArriveInfoCustomRepository.findByCityCodeAndNodeIdAndRouteIdAndDate(
+                cityCode, nodeId, routeId, localDate);
+    }
+
+    @Override
+    public List<ArrangedBusArriveInfo> getArrangedBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate) {
         LocalDateTime startOfDay = localDate.atStartOfDay(); // 00:00:00
         LocalDateTime endOfDay = localDate.plusDays(1).atStartOfDay();
 

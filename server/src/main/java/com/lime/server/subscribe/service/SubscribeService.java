@@ -24,7 +24,8 @@ public interface SubscribeService {
     List<BusArriveInfo> getBusInfoWithDate2(int cityCode, String nodeId, LocalDate localDate);
 
     //도시코드, 정류장, 버스로 특정날짜 도착시간 찾기
-    List<ArrangedBusArriveInfo> getBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate);
+    List<BusArriveInfo> getBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate);
+    List<ArrangedBusArriveInfo> getArrangedBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate);
     List<ArrangedBusArriveInfo> getAllBusInfoWithDate(int cityCode, String nodeId, LocalDate localDate);
 
     void cancel(Member member, Integer subscribeId);
