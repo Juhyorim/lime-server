@@ -2,7 +2,6 @@ package com.lime.server.subscribe.service;
 
 import com.lime.server.auth.entity.Member;
 import com.lime.server.auth.repository.MemberRepository;
-import com.lime.server.busApi.service.BusApiService;
 import com.lime.server.subscribe.entity.ArrangedBusArriveInfo;
 import com.lime.server.subscribe.entity.BusArriveInfo;
 import com.lime.server.subscribe.entity.Subscription;
@@ -12,7 +11,6 @@ import com.lime.server.subscribe.repository.BusArriveInfoRepository;
 import com.lime.server.subscribe.repository.SubscribeRepository;
 import com.lime.server.util.KoreanTimeUtil;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,43 +27,21 @@ public class SubscribeServiceImpl implements SubscribeService {
     private final BusArriveInfoRepository busArriveInfoRepository;
     private final BusArriveInfoCustomRepository busArriveInfoCustomRepository;
     private final MemberRepository memberRepository;
-    private final BusApiService busApiService;
     private final KoreanTimeUtil timeUtil;
     private final ArrangedBusArriveInfoCustomRepository arrangedBusArriveInfoCustomRepository;
-
-    @Override
-    public void subscribe(Member member, String stationId, String routeId, String nodeName, String nodeNo, int cityCode,
-                          String routeNo) {
-        //버스 구독은 다시생각 @TODO
-//        Member findMember = memberRepository.findById(member.getId())
-//                .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 없음"));
-//
-//        Subscription subscription = subscribeRepository.findByMemberAndNodeIdAndRouteId(findMember, stationId, routeId)
-//                .orElseGet(() -> null);
-//
-//        if (subscription != null) {
-//            throw new IllegalArgumentException("이미 존재하는 구독정보");
-//        }
-//
-//        subscription = Subscription.of(findMember, cityCode, stationId, nodeNo, nodeName, routeId, routeNo);
-//        findMember.addSubscription(subscription);
-//
-//        subscribeRepository.save(subscription);
-    }
 
     @Override
     public void subscribeV2(Member member, String stationId, String nodeName, String nodeNo, int cityCode) {
         Member findMember = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 회원 없음"));
 
-        Subscription subscription = subscribeRepository.findByMemberAndNodeId(findMember, stationId)
-                .orElseGet(() -> null);
-
-        if (subscription != null) {
+        //중복 구독 불가능
+        boolean exists = subscribeRepository.existsByMemberAndNodeId(findMember, stationId);
+        if (exists) {
             throw new IllegalArgumentException("이미 존재하는 구독정보");
         }
 
-        subscription = Subscription.of(findMember, cityCode, stationId, nodeNo, nodeName);
+        Subscription subscription = Subscription.of(findMember, cityCode, stationId, nodeNo, nodeName);
         findMember.addSubscription(subscription);
         subscribeRepository.save(subscription);
     }
@@ -116,8 +92,8 @@ public class SubscribeServiceImpl implements SubscribeService {
 
     @Override
     public List<BusArriveInfo> getBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate) {
-        LocalDateTime startOfDay = localDate.atStartOfDay(); // 00:00:00
-        LocalDateTime endOfDay = localDate.plusDays(1).atStartOfDay();
+//        LocalDateTime startOfDay = localDate.atStartOfDay(); // 00:00:00
+//        LocalDateTime endOfDay = localDate.plusDays(1).atStartOfDay();
 
         return busArriveInfoCustomRepository.findByCityCodeAndNodeIdAndRouteIdAndDate(
                 cityCode, nodeId, routeId, localDate);
@@ -125,17 +101,12 @@ public class SubscribeServiceImpl implements SubscribeService {
 
     @Override
     public List<ArrangedBusArriveInfo> getArrangedBusInfoWithDate(int cityCode, String nodeId, String routeId, LocalDate localDate) {
-        LocalDateTime startOfDay = localDate.atStartOfDay(); // 00:00:00
-        LocalDateTime endOfDay = localDate.plusDays(1).atStartOfDay();
-
         return arrangedBusArriveInfoCustomRepository.findByCityCodeAndNodeIdAndRouteIdAndDate(
                 cityCode, nodeId, routeId, localDate);
     }
 
     @Override
     public List<ArrangedBusArriveInfo> getAllBusInfoWithDate(int cityCode, String nodeId, LocalDate localDate) {
-//        LocalDateTime startOfDay = localDate.atStartOfDay(); // 00:00:00
-//        LocalDateTime endOfDay = localDate.plusDays(1).atStartOfDay();
         return arrangedBusArriveInfoCustomRepository.findByCityCodeAndNodeIdAndDate(
                 cityCode, nodeId, localDate);
     }

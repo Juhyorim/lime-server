@@ -32,15 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class SubscribeController {
     private final SubscribeService subscribeService;
 
-    @Operation(summary = "구독하기")
-    @PostMapping
-    public ResponseEntity subscribe(@AuthenticationPrincipal Member member, @RequestBody SubscribeRequest request) {
-        subscribeService.subscribe(member, request.stationId(), request.routeId(), request.nodeName(), request.nodeNo(),
-                request.cityCode(), request.routeNo());
-
-        return ResponseEntity.ok().build();
-    }
-
     @Operation(summary = "구독 취소")
     @DeleteMapping("/{subscribeId}")
     public ResponseEntity subscribe(@AuthenticationPrincipal Member member, @PathVariable(name = "subscribeId") Integer subscribeId) {
@@ -72,16 +63,6 @@ public class SubscribeController {
         List<BusArriveInfo> busArriveInfos = subscribeService.getBusInfo(member, subscriptionId);
 
         return ResponseEntity.ok(new BusArriveInfoListResponse(BusArriveInfoResponse.from(busArriveInfos)));
-    }
-
-    @Operation(summary = "그냥 버스도착 정보 조회(deprecated)", description = "테스트용 버스 도착정보 조회")
-    @GetMapping("/busInfo/version2")
-    public ResponseEntity<BusArriveInfoListResponse> getBusInfo(@RequestParam int cityCode,
-                                                                @RequestParam String nodeId,
-                                                                @RequestParam String routeId) {
-//        List<BusArriveInfo> busArriveInfos = subscribeService.getBusInfo(cityCode, nodeId, routeId);
-
-        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "[가공됨] 특정날짜 버스도착 정보 조회")
